@@ -79,3 +79,117 @@ body.list-mode .main{padding-top:4px}
 .compact-grid{margin-top:9px}.schedule-line{padding:10px 0;border-bottom:1px solid var(--line)}.schedule-line:last-child{border:0}
 .danger-zone{border-color:#714055;background:#291e2a}
 @media(max-width:360px){.tab small{font-size:10px}.fab{right:10px;width:49px;height:49px}.brandicon{width:33px;height:33px}}
+/* iPhone 2.8: documento(s) adjuntos al cliente */
+.doc-field{border-top:1px solid var(--line);padding-top:14px;margin-top:2px}
+.doc-upload{border:1px dashed #35765f;border-radius:15px;background:#122b2c;padding:14px;margin:7px 0 11px;display:flex;flex-direction:column;gap:7px;align-items:flex-start;color:#d9f4e8}
+.doc-upload-icon{font-size:24px;color:var(--green)}
+.doc-upload b{font-size:14px}.doc-upload span:not(.doc-upload-icon){font-size:12px;color:var(--muted)}
+.doc-upload small{font-size:11px;line-height:1.5;color:#a3c1b4}
+.doc-upload input[type=file]{max-width:100%;font-size:12px;line-height:1.4;color:var(--ink);padding:8px;border:1px solid #34594d;border-radius:9px}
+.doc-upload input[type=file]::file-selector-button{background:#235342;border:0;color:#d6f8e8;border-radius:8px;padding:9px;margin-right:9px}
+.doc-selection{font-size:12px;color:var(--muted);word-break:break-word;padding:3px 0}
+.doc-selection b{color:var(--green)}.doc-selection div{line-height:1.7}
+.doc-invalid{color:#ff9cab}.doc-entry{border:1px solid #32775b}
+.doc-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0}
+.doc-summary b{font-size:14px}.doc-summary small{font-size:11px;color:var(--muted)}
+.doc-add{display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.doc-upload input[type=file]#clientDocManagerInput{width:100%}
+.doc-manager-list{margin-top:12px;display:flex;flex-direction:column;gap:9px}
+.doc-row{display:flex;align-items:center;gap:11px;background:#192b41;border:1px solid #30475e;border-radius:13px;padding:12px}
+.doc-icon{font-size:10px;font-weight:800;letter-spacing:.4px;background:#25483b;color:#a7f7d5;padding:11px 8px;border-radius:10px;min-width:47px;text-align:center}
+.doc-info{flex:1;min-width:0}.doc-info b{display:block;overflow-wrap:anywhere;font-size:13px}
+.doc-info small{display:block;color:var(--muted);margin-top:3px;font-size:11px}
+.doc-links{display:flex;gap:13px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.doc-links a,.doc-links button{border:0;background:transparent;padding:4px 0;color:#8eeec3;text-decoration:none;font-weight:750;font:inherit;font-size:12px;cursor:pointer}
+.doc-links .doc-remove{color:#ff9cab}
+
+/* 2.9 — Agenda plegable por crédito y reportes con visualizaciones nativas */
+.upcoming-list{display:flex;flex-direction:column;gap:11px;margin-bottom:18px}
+.upcoming-credit-card{margin:0;padding:16px;border:1px solid #2c4860}
+.upcoming-person{min-width:0;flex:1}
+.upcoming-values{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:13px 0}
+.upcoming-values>div{background:#1b2e41;border-radius:12px;padding:11px;min-width:0}
+.upcoming-values small,.upcoming-values b{display:block}
+.upcoming-values small{font-size:10px;color:#acbdd0;margin-bottom:7px}
+.upcoming-values b{font-size:15px;overflow-wrap:anywhere;color:#e7f9f0}
+.upcoming-details{border:1px solid #2d465c;border-radius:12px;overflow:hidden;margin:8px 0 14px;background:#132235}
+.upcoming-details summary{display:flex;cursor:pointer;align-items:center;justify-content:space-between;list-style:none;padding:11px 12px;font-weight:700;font-size:12px;color:#b8efdb;user-select:none}
+.upcoming-details summary::-webkit-details-marker{display:none}
+.upcoming-details summary:focus-visible{outline:2px solid #34d399;outline-offset:-2px}
+.upcoming-details .chevron{font-size:20px;transition:transform .2s;line-height:12px}
+.upcoming-details[open] .chevron{transform:rotate(180deg)}
+.installment-list{border-top:1px solid #2d465c;padding:1px 12px 6px}
+.upcoming-installment{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #22394c}
+.upcoming-installment:last-child{border-bottom:0}
+.upcoming-installment span b,.upcoming-installment span small{display:block}
+.upcoming-installment span b,.upcoming-installment strong{font-size:12px}
+.upcoming-installment span small{font-size:11px;margin-top:3px;color:#92a8c0}
+.upcoming-installment strong{color:#9bf1c9}
+.cash-clarity{border:1px solid #2d5f57;margin:12px 0 16px}
+.cash-clarity-heading{font-size:13px;font-weight:800;color:#abf3d1;margin:1px 0 9px}
+.cash-clarity .sub{line-height:1.6;margin-top:10px}
+.movement-cancelled{border-style:dashed;opacity:.8}
+.red-val{color:#fb8799!important}
+.report-month-card{margin-bottom:12px;background:linear-gradient(130deg,#172740,#122d37);border:1px solid #34575b}
+.report-month-card .search{margin-bottom:9px;color-scheme:dark}
+.report-section{margin:24px 0 12px}
+.report-section>span{font-size:10px;font-weight:850;letter-spacing:1.6px;color:#50d9b0}
+.report-section h3{font-size:19px;color:#f1f8fc;margin:7px 0 4px;letter-spacing:-.5px}
+.report-section p{font-size:12px;color:#9aacbd;margin:0;line-height:1.55}
+.report-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.report-metric{background:#17263c;border:1px solid #2f435b;border-radius:17px;padding:14px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.report-metric.highlight{border-color:#2c9f78;background:linear-gradient(140deg,#174238,#18364b)}
+.report-metric-icon{display:grid;place-items:center;background:#1b483e;border-radius:9px;width:28px;height:28px;color:#71e9bb;font-size:16px;font-weight:800}
+.report-metric-value{font-size:clamp(14px,4.2vw,20px);color:#ecf8fe;line-height:1.15;font-weight:850;letter-spacing:-.3px;overflow-wrap:anywhere}
+.report-metric-label{color:#9eb0c9;font-size:10.5px;line-height:1.35}
+.report-card{margin-top:12px;padding:17px 15px}
+.report-card .cardtitle{font-size:14px}
+.report-chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.report-chart-head>div:first-child{flex:1;min-width:0}
+.report-chart-head .sub{margin-top:5px}
+.report-pill{font-size:11px;background:#18473b;color:#8cf5c2;border:1px solid #276e55;padding:7px 8px;border-radius:20px;white-space:nowrap;font-weight:800}
+.daily-chart{margin-top:14px;background:linear-gradient(180deg,#14293b,#112236);border:1px solid #2a4155;border-radius:12px;padding:10px 8px 4px;overflow:hidden}
+.daily-chart svg{display:block;width:100%;height:175px}
+.axis-dates{display:flex;justify-content:space-between;color:#98aec6;padding:3px 16px 9px;font-size:10px}
+.donut-layout{display:flex;align-items:center;gap:18px;margin:15px 0 2px;flex-wrap:wrap}
+.report-donut{width:152px;height:152px;max-width:47%;aspect-ratio:1;border-radius:100%;display:grid;place-items:center;flex-shrink:0}
+.donut-hole{width:69%;aspect-ratio:1;background:#152237;border-radius:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px;text-align:center;box-shadow:0 0 0 5px #15223718}
+.donut-hole small{color:#a1b5c6;font-size:10px}
+.donut-hole b{font-size:12px;color:#f4f8ff;overflow-wrap:anywhere}
+.donut-legend{flex:1;min-width:118px;display:flex;flex-direction:column;gap:12px}
+.donut-legend>div{display:grid;grid-template-columns:10px 1fr;column-gap:6px;row-gap:2px;align-items:start}
+.donut-legend>div>b{grid-column:2;font-size:12px;color:#e4eefb;overflow-wrap:anywhere}
+.donut-legend>div>span:not(.legend-dot){font-size:10.5px;color:#aec2d3}
+.legend-dot{width:9px;height:9px;border-radius:3px;margin-top:3px}
+.green-dot{background:#34d399}.blue-dot{background:#38bdf8}.amber-dot{background:#fbbf24}.pink-dot{background:#fb7185}
+.comparison-legend{display:flex;gap:14px;flex-wrap:wrap;margin:13px 0}
+.comparison-legend span{display:flex;gap:6px;align-items:center;color:#b9cce0;font-size:10px}
+.comparison-legend i{background:#34d399;width:9px;height:9px;border-radius:3px}
+.comparison-legend span:nth-child(2) i{background:#38bdf8}
+.comparison-chart{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;height:184px;margin:10px 0}
+.comparison-month{display:flex;flex-direction:column;height:100%;gap:5px;align-items:center;min-width:0}
+.comparison-month>span{font-size:10px;color:#9bb0c4}
+.comparison-pair{flex:1;width:100%;display:flex;gap:4px;justify-content:center;align-items:end;border-bottom:1px solid #394b5f;background:repeating-linear-gradient(to top,transparent,transparent 27px,#26374c 28px);padding:0 3px}
+.comparison-col{display:flex;height:100%;flex:1;max-width:25px;align-items:end}
+.comparison-col i{background:linear-gradient(0deg,#0b946c,#34d399);width:100%;min-height:2px;border-radius:5px 5px 0 0}
+.comparison-col.payments i{background:linear-gradient(0deg,#127ba0,#38bdf8)}
+.report-stat-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:11px 0;border-bottom:1px solid #293e53}
+.report-stat-row span{color:#bfd0dd;font-size:12px;line-height:1.5;flex:1}
+.report-stat-row strong{white-space:nowrap;font-size:13px;color:#f4fbff}
+.report-stat-row:last-of-type{border-bottom:0}
+.horizontal-bar-row{display:grid;grid-template-columns:58px 1fr 90px;gap:8px;align-items:center;margin-top:12px}
+.horizontal-bar-label{font-size:11px;color:#b2c9d8}.horizontal-bar-value{color:#d9f4e9;font-size:11px;text-align:right;font-weight:700}
+.horizontal-bar-track{background:#253a4d;height:10px;border-radius:15px;overflow:hidden}
+.horizontal-bar-track i{display:block;height:100%;border-radius:15px;background:#34d399}
+.horizontal-bar-row:nth-of-type(2) .horizontal-bar-track i{background:#fb7185}
+.note-card{border-color:#3e4e61}
+@media(min-width:670px){.report-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.report-donut{width:176px;height:176px}.daily-chart svg{height:220px}}
+@media(max-width:350px){.report-donut{width:130px}.donut-layout{gap:10px}.report-stat-row strong{font-size:12px}.horizontal-bar-row{grid-template-columns:48px 1fr 73px}}
+
+.expense-bar .horizontal-bar-track i{background:#fb7185}
+
+/* 3.0 · Fecha de reapertura de Caja */
+.cash-reopen{margin-top:13px;padding:12px 15px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.32);border-radius:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.cash-reopen span{font-size:11px;letter-spacing:.055em;color:#a9c3be;font-weight:650}
+.cash-reopen strong{font-size:15px;color:#78f2bf;font-variant-numeric:tabular-nums}
+.cash-reopen-hero{background:rgba(52,211,153,.12);margin-top:12px}

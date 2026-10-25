@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Mi Cartera · iPhone 2.7",
+  "name": "Mi Cartera · iPhone 3.0",
   "short_name": "Mi Cartera",
-  "description": "Mi Cartera con funciones Android 2.7, datos independientes en cada iPhone.",
+  "description": "Mi Cartera iPhone 3.0 con documentos por cliente y datos locales independientes.",
   "lang": "es",
   "start_url": "./index.html",
   "scope": "./",

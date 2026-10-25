@@ -144,7 +144,7 @@ function backupIsValid(d){
  const cs=new Set(d.clients.map(x=>x.id)),ls=new Set(d.loans.map(x=>x.id));
  if(!num(d.cashBase)||!distinct(d.clients)||!distinct(d.loans)||!distinct(d.payments)||!distinct(d.movements)||!distinct(d.closes))return false;
  if(!d.clients.every(c=>c&&isId(c.id)&&typeof c.name==='string'&&c.name.length<=500))return false;
- if(!d.loans.every(l=>l&&isId(l.id)&&cs.has(l.clientId)&&num(l.principal)&&l.principal>0&&num(l.interest)&&l.interest>=0&&Number.isInteger(l.count)&&l.count>0&&l.count<=500&&date(l.startDate)&&['weekly','fortnightly','monthly'].includes(l.frequency)))return false;
+ if(!d.loans.every(l=>l&&isId(l.id)&&cs.has(l.clientId)&&num(l.principal)&&l.principal>0&&num(l.interest)&&l.interest>=0&&Number.isInteger(l.count)&&l.count>0&&l.count<=500&&date(l.startDate)&&['daily','weekly','fortnightly','monthly'].includes(l.frequency)))return false;
  if(!d.payments.every(p=>p&&isId(p.id)&&ls.has(p.loanId)&&num(p.amount)&&p.amount>0&&date(p.date)&&(!p.receipt||safeReceipt(p.receipt))))return false;
  if(!d.movements.every(m=>m&&isId(m.id)&&['Ajuste','Ingreso','Egreso','Aporte a caja base'].includes(m.kind)&&num(m.amount)&&date(m.date)))return false;
  if(!d.closes.every(c=>c&&isId(c.id)&&date(c.date)&&num(Number(c.closedAt||0))))return false;

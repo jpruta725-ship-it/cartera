@@ -1,46 +1,53 @@
-# Mi Cartera — iPhone Local Independiente (PWA)
+# Mi Cartera para iPhone — versión 2.7
 
-Una misma aplicación instalable para muchos iPhone **sin sincronización**. Cada iPhone empieza con su cartera vacía y guarda clientes, préstamos, cobros, Caja y cierres en SU propio almacenamiento local. Un iPhone nunca consulta los datos de otro.
+Versión web instalable (PWA) con el estilo oscuro, organización y principales funciones de **Mi Cartera Android 2.7**.
 
-## Distribución gratuita (desde Windows)
-1. Crea un repositorio público nuevo en GitHub (cuenta gratuita), por ejemplo `mi-cartera-iphone`. Nunca subas copias de seguridad ni archivos reales de clientes al repositorio.
-2. Sube a la **raíz** del repositorio los archivos `index.html`, `app.js`, `styles.css`, `sw.js`, `manifest.json`, `icon-192.png`, `icon-512.png` (sin la carpeta contenedora).
-3. En el repositorio abre `Settings > Pages > Build and deployment > Deploy from a branch`, elige `main` y `/ (root)` y guarda.
-4. GitHub publica una dirección HTTPS tipo `https://USUARIO.github.io/mi-cartera-iphone/`.
-5. Desde Safari en CADA iPhone abre esa dirección. Usa `Compartir > Añadir a pantalla de inicio > Abrir como app web > Añadir`.
-6. Abre la aplicación desde el icono, con internet al menos la primera vez. Luego se conservarán los archivos estáticos para usar la interfaz sin conexión.
+## Funciones y organización
 
-## Funciones
-- Clientes con ficha e historial de créditos.
-- Créditos editables con interés fijo sobre el capital original y calendario semanal, quincenal o mensual.
-- Cobros rápidos con importe predefinido y filtros: vencidos, hoy, 7/30 días, mes siguiente, futuros.
-- Abonos parciales y comprobantes (archivo por abono de hasta 1 MB, por limitaciones del almacenamiento local).
-- Anulación de créditos y sus abonos con corrección automática del saldo de Caja; cierre histórico intacto y ajuste actual para pagos históricos.
-- Caja base, ingresos, egresos, cierres y bloqueo de 24 horas.
-- Informes mensuales y gráficos; exportar/importar respaldo JSON (incluye comprobantes).
-- Restablecimiento total solo tras escribir exactamente `confirmo` y una segunda confirmación.
+- Cinco secciones abajo: **Inicio, Clientes, Cobros, Caja, Reportes**.
+- Menú superior `⋮`: **Créditos / Clavos**, Cobros, Reportes, Copias de seguridad y Ajustes.
+- Botón flotante `+` con las acciones más frecuentes.
+- Inicio: efectivo disponible, cartera activa, cobros del día, vencidos, Clientes, Clavos, últimos siete días y agenda.
+- Clientes: búsqueda, editar/eliminar, prestar desde su ficha, historial con fechas, capital, abonos, saldos y advertencia de Clavos.
+- Créditos: búsqueda, activos/vencidos/pagados, detalle de cuotas, edición, eliminación del crédito junto con sus abonos, menú `⋮` discreto para **Marcar como Clavo / Devolver a Cartera**.
+- Cobros: importe sugerido automático, botón de cobro rápido, abonos parciales, adjuntar comprobante (imagen/PDF hasta 600 KB) y borrado confirmado, historial por cliente, filtros vencidos, hoy, 7 días, 30 días, mes siguiente y futuros, selector Cartera/Clavos.
+- Préstamos: interés fijo sobre el capital inicial, fechas del crédito y del primer pago, frecuencias diaria/semanal/quincenal/mensual, selección de días de semana y 1–31 del mes, cuotas calculadas y redondeadas a centavos, selector de cliente con búsqueda.
+- Caja: aportes de caja base, ingresos/egresos, desembolsos, cobros, anulaciones y ajustes de capital, cierre y bloqueo 24 horas, cierres históricos.
+- Reportes: mes, capital prestado, recaudado, intereses, saldos, ingresos y egresos, gráfico diario.
+- Respaldo JSON e importación; restaurar todos los datos exige escribir **`confirmo`** y confirmar otra vez.
 
-## MUY IMPORTANTE: datos
-- **Esta versión NO tiene sincronización, usuarios ni servidor de datos.** Distribuir la misma URL no distribuye ninguna información.
-- **GitHub Pages aloja solo el código vacío**; no subas archivos JSON de clientes ni comprobantes.
-- El almacenamiento web puede ser eliminado por iOS cuando hay presión de espacio, al borrar datos de Safari o al quitar la aplicación. Haz copias de seguridad a Archivos/iCloud Drive por lo menos cada día de trabajo.
-- Un backup JSON transferido manualmente a otro iPhone REEMPLAZA la información de ese segundo iPhone. Nunca importes la copia de un dispositivo en otro si quieres mantener ambas carteras independientes.
-- La versión iPhone tiene su propio formato JSON. **No importa directamente los ZIP/JSON de Android 2.5**; se necesitaría un conversor si quieres migrar datos existentes.
-- Para distribuir a varios iPhone no necesitas Mac ni Xcode, ni pagar Apple Developer. Necesitas una URL HTTPS para instalar.
-- Esta entrega no es una app nativa App Store, ni ha sido probada directamente en hardware iPhone; prueba las operaciones con datos ficticios antes de usarla en un negocio.
+La aplicación usa la misma clave localStorage de la versión web v1.1 (`micartera.pwa.data.v1`). Una actualización de archivos en el MISMO origen/URL no borra intencionadamente la cartera existente.
 
-## Privacidad
-- Los datos de negocio no se envían a GitHub ni a un servidor por el código de esta aplicación; se guardan en el almacenamiento del navegador/web app del dispositivo.
-- Al visitar el hosting HTTPS se produce tráfico técnico ordinario a ese proveedor (IP y descarga de archivos estáticos).
-- No cambies el dominio de alojamiento sin prever que cada origen HTTPS usa un almacenamiento local diferente.
+## Actualizar TU repositorio de GitHub Pages
 
+Repositorio: `https://github.com/jpruta725-ship-it/cartera`
 
-## Versión 1.1 — mejoras
-- Acceso a instrucciones de instalación desde el botón `?` y desde Ajustes.
-- Edición de préstamos bloqueada durante el cierre de 24 horas (como cobros y anulaciones).
-- Validación de importación para evitar archivos JSON incompletos o ajenos.
-- Prevención de doble envío de formularios; límite de 600 KB por comprobante para reducir riesgo de llenar el almacenamiento del navegador.
-- Validación de créditos para evitar que una edición deje un préstamo con un total menor que sus pagos ya registrados.
-- La configuración HTTPS y el service worker necesitan publicación estática; no hay servicios de datos.
+1. **Primero**: desde la aplicación instalada en cada iPhone, abre `⋮ → Copias de seguridad y ajustes → Exportar copia JSON` y guarda el archivo en Archivos / iCloud Drive. Hazlo en CADA teléfono con datos propios.
+2. Descomprime este ZIP en Windows.
+3. En el repositorio de GitHub `cartera` usa **Add file → Upload files** para actualizar los archivos de la raíz, incluidos `index.html`, `app.js`, **`parity.js`**, `styles.css`, `sw.js`, `manifest.json`, los dos iconos y este README. Guarda los cambios mediante **Commit changes**. Los archivos van directamente en la raíz, NO en una subcarpeta ni como ZIP.
+4. En GitHub configura Pages para `main / (root)` si todavía no estaba activado.
+5. En Safari del iPhone abre `https://jpruta725-ship-it.github.io/cartera/`, comprueba que aparece el menú `⋮` y cinco pestañas inferiores; si aún ves la versión anterior, actualiza la página, cierra y abre otra vez la app instalada (la caché offline puede conservar brevemente la versión antigua).
+6. Conserva los respaldos JSON fuera del dispositivo y comprueba que tus clientes y Caja siguen intactos.
 
-**Importante:** esta versión usa el almacenamiento web local (`localStorage`), no una base de datos de servidor. No es una solución empresarial con garantías de permanencia de registros: exporta copias frecuentemente, pruébala con información ficticia antes de trabajar con clientes reales y considera una aplicación nativa/base de datos auditada para un uso intensivo.
+No necesitas Mac ni la App Store. Para instalarla: Safari → Compartir → Añadir a pantalla de inicio. Funciona offline una vez visitada correctamente y guardados sus archivos de aplicación. Cada dispositivo conserva datos independientes; no hay usuarios, nube ni sincronización.
+
+## Compatibilidad con respaldos
+
+- **iPhone PWA v1.1 y v2.7**: exporta/importa JSON de esta misma aplicación, con comprobantes embebidos en los datos exportados.
+- **Android 2.x, archivo JSON**: puede convertir los datos básicos del formato Android (`clients`, `loans`, `cashMovements`, `cashClosures`, `cashBases`). Importa los importes de céntimos a R$, fechas de cuotas, abonos, Clavos y efectivo calculado. Antes de restaurar en el iPhone aparece confirmación explícita y REEMPLAZA todos los datos de ese iPhone. **Revisa los saldos importados con tu respaldo original.**
+- **Android ZIP con comprobantes**: la importación directa de ese ZIP NO está implementada. Las referencias de comprobantes internos (`content://`, `file://`, `backup:`) no se pueden abrir en Safari. Debes conservar el ZIP de Android y sus comprobantes por separado; al convertir solo JSON no se transfieren los adjuntos de Android.
+
+## Límites de iOS/PWA
+
+Esta aplicación no es binario nativo iOS; se instala como **PWA** desde Safari. No puede garantizar que todos los detalles internos o integraciones del sistema funcionen exactamente igual a Kotlin/Android. Los comprobantes en la versión web se guardan como datos locales con límite individual de 600 KB. iOS puede eliminar almacenamiento web bajo algunas condiciones. La cuota de almacenamiento de `localStorage` es limitada: exporta con frecuencia y no dependas de una sola copia.
+
+**Nunca publiques archivos con datos privados de clientes o respaldos JSON en un repositorio público.** Sube únicamente el código fuente de estos nueve archivos.
+
+## Comprobaciones realizadas
+
+- Sintaxis JavaScript `node --check`.
+- Prueba de navegador Chromium emulando un móvil: alta de cliente y préstamo, lista de Créditos, menú discreto de Clavos, filtro de Cobros, cobro de una cuota, eliminación y vuelta del efectivo a Caja.
+- Pruebas contables: abono/eliminación de crédito, eliminación de abono en cierre anterior sin reescribir el cierre, reglas de fechas 31/02 y conversión JSON de un ejemplo Android.
+- Carga con datos existentes de la PWA v1.1 sin pérdida de registros.
+
+**No se ha verificado en Safari de un iPhone físico.** Prueba primero con una copia de seguridad y, si la vas a usar con dinero real, compara los cálculos contra tus registros.

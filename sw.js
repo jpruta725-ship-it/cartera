@@ -1,5 +1,5 @@
-const CACHE='micartera-iphone-v31-caja-calendario-v1';
-const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./manifest.json','./icon-192.png','./icon-512.png'];
+const CACHE='micartera-iphone-v32-auditoria-integridad';
+const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./integrity.js','./manifest.json','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });

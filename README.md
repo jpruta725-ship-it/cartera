@@ -1,4 +1,8 @@
-# Mi Cartera para iPhone 3.3 — Revisión integral
+# Mi Cartera para iPhone 3.3.1 — Frecuencia diaria predefinida
+
+Ver `NOVEDADES-3.3.1.md` para los cambios recientes y pasos de publicación.
+
+# Historial de la versión 3.3 — Revisión integral
 
 **Aplicación web instalable (PWA)** para Safari. Funciona sin cuentas, mantiene los datos separados en cada teléfono y utiliza reales brasileños (R$). No es una aplicación nativa de App Store.
 

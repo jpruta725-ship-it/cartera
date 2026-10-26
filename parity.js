@@ -159,7 +159,7 @@ function makeAmounts(l){const n=l.count,centsTotal=Math.round(round(l.principal*
 addLoan=function(existing=null,clientId=null){
  if(isDayClosed()){notify('Caja cerrada: no se pueden otorgar ni modificar créditos durante el bloqueo.');return}
  if(!data.clients.length){notify('Primero registra un cliente');addClient();return}
- const l=existing||{clientId:clientId||'',title:'Crédito',principal:'',interest:'',count:'',startDate:today(),firstDueDate:'',frequency:'weekly',weeklyDays:[],monthDays:[],notes:''};
+ const l=existing||{clientId:clientId||'',title:'Crédito',principal:'',interest:'',count:'',startDate:today(),firstDueDate:'',frequency:'daily',weeklyDays:[],monthDays:[],notes:''};
  const weekdays=[['1','Lun'],['2','Mar'],['3','Mié'],['4','Jue'],['5','Vie'],['6','Sáb'],['0','Dom']];
  const weekly=weekdays.map(([val,n])=>`<label><input type="checkbox" name="weeklyDays" value="${val}" ${(l.weeklyDays||[]).includes(+val)?'checked':''}>${n}</label>`).join('');
  const months=Array.from({length:31},(_,i)=>i+1).map(d=>`<label><input type="checkbox" name="monthDays" value="${d}" ${(l.monthDays||[]).includes(d)?'checked':''}>${d}</label>`).join('');

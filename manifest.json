@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Mi Cartera · iPhone 3.3",
+  "name": "Mi Cartera · iPhone 3.3.1",
   "short_name": "Mi Cartera",
-  "description": "Mi Cartera iPhone 3.3 con documentos por cliente y datos locales independientes.",
+  "description": "Mi Cartera iPhone 3.3.1 con documentos por cliente y datos locales independientes.",
   "lang": "es",
   "start_url": "./index.html",
   "scope": "./",

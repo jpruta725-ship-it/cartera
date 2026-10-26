@@ -3,7 +3,7 @@
  * Capa de interfaz y precisión; no cambia KEY, datos almacenados ni formato de respaldo.
  */
 (function () {
-  const RELEASE='3.3.2';
+  const RELEASE='3.4';
   // Protección adicional: impedir sobrescribir datos locales no legibles y evitar
   // que un fallo de espacio en Safari parezca un pago/cambio guardado con éxito.
   let durableRaw=null,storageUnreadable=false;

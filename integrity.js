@@ -4,7 +4,7 @@
  * El diagnóstico no reescribe ni sanea datos: informa de posibles errores.
  */
 (function(){
- const RELEASE='3.3.2';
+ const RELEASE='3.4';
  const FINANCIAL_BACKUP_MAX=12*1024*1024;
  const MAX_RECORDS=25000;
  const MAX_AMOUNT=1e12;

@@ -210,3 +210,21 @@ body.list-mode .main{padding-top:4px}
 .integrity-issue.error{border-left-color:#FB7185}
 .integrity-issue b{font-size:13px;color:var(--text,#eaf1fb)}
 .integrity-issue p{margin:5px 0 0;color:var(--muted,#9dacc0);font-size:12px;line-height:1.45}
+
+/* Mi Cartera iPhone 3.3.2 — Enlace de ubicación por Google Maps */
+.maps-client-field{border-top:1px solid var(--line);padding-top:15px;margin-top:2px}
+.maps-client-field>small{display:block;font-size:11.5px;line-height:1.55;color:var(--muted);margin-top:7px}
+.maps-client-field>small b{color:#b5f3d8}
+.maps-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.maps-actions .btn{font-size:11.5px;padding:9px 11px;flex-grow:1}
+.maps-result{display:block;padding:9px 10px;margin-top:10px;border-radius:10px;background:#14362f;color:#a1ead0!important}
+.client-map-card{border:1px solid #25674f;background:linear-gradient(125deg,#17283d,#17362e)}
+.client-map-card .row{gap:14px;align-items:center}
+.client-map-card .row>div{min-width:0;flex:1}
+.client-map-card .btn{flex-shrink:0;max-width:45%;text-align:center}
+.maps-address{overflow-wrap:anywhere;margin-top:5px}
+.client-map-row{display:flex;margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.client-map-link{color:#8dedbd;font-size:12px;font-weight:700;text-decoration:none;line-height:1.5}
+.client-map-link:focus-visible,.client-map-link:hover{text-decoration:underline}
+.maps-menu-link{margin:14px 0 6px;display:flex}
+@media(max-width:400px){.client-map-card .row{flex-wrap:wrap}.client-map-card .btn{max-width:100%}}

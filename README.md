@@ -1,6 +1,34 @@
-# Mi Cartera para iPhone 3.3.1 — Frecuencia diaria predefinida
+# Mi Cartera para iPhone 3.3.2 — Ubicación de clientes con Google Maps
 
-Ver `NOVEDADES-3.3.1.md` para los cambios recientes y pasos de publicación.
+Ver `NOVEDADES-3.3.2.md` para los cambios de esta entrega.
+
+## Ubicación de clientes
+
+- En **Clientes → Nuevo cliente** o **Editar cliente**, escribe la dirección y, opcionalmente, pega un enlace de Google Maps.
+- Pulsa **Buscar dirección** para abrir Google Maps. Selecciona el punto exacto, pulsa **Compartir → Copiar enlace**, vuelve a Mi Cartera y pégalo en **Ubicación en Google Maps**.
+- Si estás físicamente en el domicilio del cliente, puedes pulsar **Mi ubicación actual**: solo obtiene las coordenadas con permiso expreso de geolocalización del iPhone.
+- La ficha y la tarjeta del cliente permiten **Abrir en Maps** cuando tiene un enlace guardado.
+- El enlace se guarda en el registro local y forma parte de la copia JSON, junto con la información del cliente.
+- Sin cuenta de Google ni API key. Maps se abre externamente: seleccionar el punto **dentro** de la app requeriría integrar un servicio cartográfico adicional.
+- Los mapas requieren internet, pero registrar y consultar la dirección y el enlace guardado es local.
+
+## Publicar la versión 3.3.2
+
+1. Exporta un respaldo desde cada iPhone y guárdalo fuera de la aplicación.
+2. Descomprime el ZIP y sube todos los archivos de aplicación de esta carpeta al repositorio GitHub Pages `jpruta725-ship-it/cartera`, reemplazando las versiones anteriores. **Asegúrate de incluir `maps.js`, `index.html` y `sw.js`**.
+3. Haz **Commit changes** y comprueba que `index.html` muestra **iPhone 3.3.2** y que `maps.js` aparece en la raíz.
+4. Abre `https://jpruta725-ship-it.github.io/cartera/?v=332` en Safari después de la publicación.
+5. No desinstales la PWA ni borres datos de Safari. La clave financiera (`micartera.pwa.data.v1`) y la base de documentos (`micartera.client-documents.v1`) no cambian.
+6. Comprueba el registro de un cliente ficticio, el enlace de Maps y el respaldo antes de trabajar con ubicaciones reales.
+
+**Privacidad:** los enlaces de mapas pueden revelar domicilios. No subas archivos de respaldo ni información real de clientes a un repositorio público. Las copias JSON no están cifradas.
+
+## Validaciones efectuadas
+
+- Sintaxis JavaScript de los scripts: sin errores.
+- Prueba de navegador simulado: crear cliente con enlace, mostrar botón Maps en tarjeta/ficha, editar, rechazar enlace de otro dominio, obtener coordenadas autorizadas y guardarlas.
+- Conservación del campo `mapUrl` en el registro y en la serialización de datos locales.
+- Pendiente: validar el flujo de Google Maps y el permiso de geolocalización directamente en Safari de un iPhone físico.
 
 # Historial de la versión 3.3 — Revisión integral
 

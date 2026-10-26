@@ -3,7 +3,7 @@
  * Capa de interfaz y precisión; no cambia KEY, datos almacenados ni formato de respaldo.
  */
 (function () {
-  const RELEASE='3.3.1';
+  const RELEASE='3.3.2';
   // Protección adicional: impedir sobrescribir datos locales no legibles y evitar
   // que un fallo de espacio en Safari parezca un pago/cambio guardado con éxito.
   let durableRaw=null,storageUnreadable=false;
@@ -184,7 +184,7 @@
     const root=$('#settings');
     if(root){
       root.querySelectorAll('.sub').forEach(el=>{el.textContent=el.textContent.replace(/Versión iPhone (?:2\.8|3\.0|3\.1|3\.2)/g,'Versión iPhone '+RELEASE)});
-      root.insertAdjacentHTML('beforeend',`<div class="card"><div class="cardtitle">Versión ${RELEASE} · frecuencia diaria por defecto</div><p class="sub">Cobros separados por crédito, categorías de frecuencia y fechas de vencimiento más claras. Exporta periódicamente una copia completa fuera de Safari; actualizar la app no sustituye un respaldo.</p>${btn('Comprobar versión publicada','check-release','secondary')}</div>`);
+      root.insertAdjacentHTML('beforeend',`<div class="card"><div class="cardtitle">Versión ${RELEASE} · ubicación en Google Maps</div><p class="sub">Ahora puedes guardar el enlace de Google Maps de cada cliente y abrir su ubicación desde la ficha. Se conservan los cobros separados, categorías y reportes. Exporta respaldos periódicos fuera de Safari.</p>${btn('Comprobar versión publicada','check-release','secondary')}</div>`);
     }
   };
   render();

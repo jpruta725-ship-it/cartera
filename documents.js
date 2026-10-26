@@ -84,11 +84,14 @@ function docPreviewFiles(input){const n=$('#docSelection');if(!n)return;
 }
 addClient=function(existing=null){
  const c=existing||{name:'',phone:'',document:'',address:'',reference:'',notes:''};
- const markup=`<div class="formgrid">${field('Nombre completo *','name',c.name,'text',{required:true,full:true})}${field('Teléfono','phone',c.phone,'tel')}${field('Documento / número','document',c.document)}${field('Dirección','address',c.address,'text',{full:true})}${field('Referencia / contacto alternativo','reference',c.reference,'text',{full:true})}${field('Notas','notes',c.notes,'textarea',{full:true})}${docPickerMarkup(existing)}</div>`;
+ const markup=`<div class="formgrid">${field('Nombre completo *','name',c.name,'text',{required:true,full:true})}${field('Teléfono','phone',c.phone,'tel')}${field('Documento / número','document',c.document)}${field('Dirección','address',c.address,'text',{full:true})}${window.micarteraMaps.clientField(c)}${field('Referencia / contacto alternativo','reference',c.reference,'text',{full:true})}${field('Notas','notes',c.notes,'textarea',{full:true})}${docPickerMarkup(existing)}</div>`;
  openModal(existing?'Editar cliente':'Nuevo cliente',markup,existing?'Guardar cambios':'Crear cliente',async(f,form)=>{
   const name=String(f.get('name')||'').trim();if(!name){notify('Escribe el nombre del cliente.');return}
   const files=Array.from(form.querySelector('#clientDocsInput')?.files||[]);
-  const values={name,phone:String(f.get('phone')||'').trim(),document:String(f.get('document')||'').trim(),address:String(f.get('address')||'').trim(),reference:String(f.get('reference')||'').trim(),notes:String(f.get('notes')||'').trim()};
+  const rawMapUrl=String(f.get('mapUrl')||'').trim();
+  const mapUrl=rawMapUrl?window.micarteraMaps.validate(rawMapUrl):'';
+  if(rawMapUrl&&!mapUrl){notify('Pega un enlace válido de Google Maps (https://maps.app.goo.gl o google.com/maps).');return}
+  const values={name,mapUrl,phone:String(f.get('phone')||'').trim(),document:String(f.get('document')||'').trim(),address:String(f.get('address')||'').trim(),reference:String(f.get('reference')||'').trim(),notes:String(f.get('notes')||'').trim()};
   // Validar los archivos ANTES de escribir los datos del cliente.
   try{files.forEach(docCheck);if(files.length){const previous=existing?await docForClient(existing.id):[];
    if(files.length+previous.length>DOC_COUNT)throw Error(`Límite de ${DOC_COUNT} documentos por cliente.`);

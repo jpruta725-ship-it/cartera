@@ -235,18 +235,35 @@
     for(const f of files)out.push({id:f.id,clientId:f.clientId,name:f.name,type:f.type,size:f.size,createdAt:f.createdAt,data:await docBlobToDataURL(f.blob)});
     return out;
   }
+  async function buildCompleteBackup() {
+    if(!ready)throw Error('No se puede abrir el registro de rutas; no se generó ningún respaldo');
+    if(!saveRoutes())throw Error('No se pudieron confirmar los últimos datos antes del respaldo');
+    const files=await allDocumentRecords();
+    const pack={format:'micartera.rutas.v1',version:1,createdAt:new Date().toISOString(),activeId:registry.activeId,
+      routes:CLONE(registry.routes),clientDocuments:files};
+    const content=JSON.stringify(pack);
+    const blob=new Blob([content],{type:'application/json'});
+    if(blob.size>125*1024*1024)throw Error('El respaldo supera el tamaño máximo de 125 MB');
+    const dt=new Date();
+    const stamp=`${dateInput(dt)}_${String(dt.getHours()).padStart(2,'0')}${String(dt.getMinutes()).padStart(2,'0')}${String(dt.getSeconds()).padStart(2,'0')}`;
+    const filename=`MiCartera-TODAS-LAS-RUTAS-${stamp}.json`;
+    return {blob,filename,routeCount:registry.routes.length,documentCount:files.length};
+  }
+  // Construye un respaldo portable sin descargarlo: usado para Drive y Archivos.
+  window.MiCarteraBuildCompleteBackup=buildCompleteBackup;
   async function exportAllRoutes() {
     if(!ready)return;
     try {
-      saveRoutes();
-      const files=await allDocumentRecords();
-      const pack={format:'micartera.rutas.v1',version:1,createdAt:new Date().toISOString(),activeId:registry.activeId,
-       routes:CLONE(registry.routes),clientDocuments:files};
-      const content=JSON.stringify(pack);
-      if(content.length>125*1024*1024)throw Error('El respaldo supera el tamaño máximo de 125 MB');
-      downloadBlob(new Blob([content],{type:'application/json'}),`MiCartera-TODAS-LAS-RUTAS-${today()}.json`);
-      notify(`Respaldo completo: ${registry.routes.length} ruta(s) y ${files.length} documento(s)`);
-    }catch(err){alert('No se pudo crear el respaldo completo de rutas: '+String(err.message||err))}
+      const prepared=await buildCompleteBackup();
+      if(typeof window.MiCarteraBackupDelivery==='function') {
+        await window.MiCarteraBackupDelivery(prepared);
+      } else {
+        downloadBlob(prepared.blob,prepared.filename);
+        notify(`Respaldo completo: ${prepared.routeCount} ruta(s) y ${prepared.documentCount} documento(s)`);
+      }
+    } catch(err) {
+      alert('No se pudo completar el respaldo: '+String(err.message||err));
+    }
   }
   const oldExportBackup=exportBackup;
   exportBackup=exportAllRoutes; // El botón rápido también protege TODAS las rutas.

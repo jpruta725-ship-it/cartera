@@ -1,5 +1,5 @@
-const CACHE='micartera-iphone-v34-rutas-calidad';
-const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./integrity.js','./quality.js','./maps.js','./routes.js','./manifest.json','./icon-192.png','./icon-512.png'];
+const CACHE='micartera-iphone-v343-luminous-theme';
+const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./integrity.js','./quality.js','./maps.js','./routes.js','./drive.js','./manifest.json','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });

@@ -233,3 +233,201 @@ body.list-mode .main{padding-top:4px}
 .route-switch{max-width:136px;min-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:750;border:1px solid #34546a;border-radius:12px;background:#173c3b;color:#c3f6df;padding:10px 9px;cursor:pointer;flex-shrink:1}
 .topactions{flex-shrink:0}.route-manager-intro{font-size:13px;line-height:1.5;color:var(--muted);margin-bottom:12px}.route-list{display:grid;gap:9px;margin:8px 0 18px}.route-item{background:var(--card,#172337);border:1px solid #33465c;border-radius:15px;padding:13px}.route-item.route-active{border-color:#34d399;background:#173b35}.route-item-info{min-width:0;display:flex;flex-direction:column;gap:5px}.route-item-info b{font-size:15px;overflow-wrap:anywhere}.route-item-info small{font-size:11px;color:var(--muted)}.route-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.route-actions .btn{max-width:100%;flex:1}.client-quality-inline{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:9px;border-top:1px solid #2c4157}.client-quality-inline small{font-size:11px;color:var(--muted)}.quality-report{margin-top:6px}.quality-score{display:flex;gap:10px;align-items:baseline;margin:14px 0}.quality-score strong{color:#34d399;font-size:25px}.quality-score span{font-size:11px;color:var(--muted)}.quality-progress{height:8px;border-radius:12px;background:#2c4157;overflow:hidden;margin-bottom:14px}.quality-progress i{display:block;height:100%;border-radius:12px;background:#34d399}.quality-history{display:grid;gap:6px;margin-top:12px}.quality-history .row{padding:8px 0;border-top:1px solid #2c4157;font-size:12px}
 @media(max-width:420px){.topbar{padding-left:10px;padding-right:10px}.route-switch{max-width:102px;padding:9px 6px}.brand small{max-width:80px}.topactions{gap:1px}.iconbtn{width:34px}}
+
+/* iPhone 3.4.1 · Selector de cuotas en el formulario de cobro */
+.payment-stepper{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;border:1px solid #31435b;border-radius:14px;background:#142035}
+.payment-stepper button{min-width:52px;height:46px;padding:8px;font-size:25px;border-radius:11px}
+.payment-stepper button:disabled{opacity:.35;cursor:not-allowed}
+.payment-stepper #f-installmentCount{width:92px;min-width:0;height:46px;text-align:center;padding:7px;font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+.payment-quota-summary{margin-top:9px;padding:10px 12px;border-radius:12px;background:#12392f;color:#d0f7e2;font-size:12px;line-height:1.5}
+
+/* 3.4.2 · Respaldo en Google Drive */
+.drive-settings-card {border: 1px solid rgba(52,211,153,.32);}
+.drive-settings-card .drive-state {display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;}
+.drive-settings-card .drive-actions {display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.drive-settings-card .drive-actions .btn {flex:1 1 150px;min-width:0;}
+.drive-settings-card .note {margin-top:10px;}
+@media(max-width:430px){.drive-settings-card .drive-actions .btn{flex-basis:100%;}}
+
+/* Mi Cartera iPhone 3.4.3 — Tema claro y vibrante.
+   Visual-only overrides: preserves data model, backups, payments and routes. */
+:root {
+  color-scheme: light;
+  --bg:#F4F7FF;
+  --white:#FFFFFF;
+  --card:#FFFFFF;
+  --ink:#192B51;
+  --text:#192B51;
+  --muted:#5C6D87;
+  --line:#DCE5F5;
+  --green:#087F75;
+  --green2:#DDF8F2;
+  --soft-green:#E9FBF6;
+  --red:#C82D57;
+  --amber:#956009;
+  --blue:#3B5BDB;
+  --violet:#7551DC;
+  --shadow:0 9px 26px rgba(34,65,130,.08);
+}
+html, body {color:var(--ink);background:var(--bg)}
+body {
+  background-image:radial-gradient(circle at 90% 1%,rgba(156,175,255,.14),transparent 28%),radial-gradient(circle at 5% 27%,rgba(79,220,200,.08),transparent 36%);
+  background-attachment:fixed;
+}
+.topbar,.tabbar {background:rgba(255,255,255,.96);border-color:var(--line);box-shadow:0 2px 16px rgba(38,56,119,.05)}
+.topbar{background:#fff}
+.brandicon{background:linear-gradient(140deg,#446BF1,#7759E8);color:#fff;box-shadow:0 5px 12px rgba(72,82,219,.22)}
+.brand b,.sectionhead h2,.fieldlabel,.field label{color:var(--ink)}
+.brand small,.context-name{color:var(--muted)}
+.welcome{background:linear-gradient(116deg,#3265E8 0%,#7150DE 60%,#D35BAA 100%);border:1px solid rgba(105,75,202,.13);box-shadow:0 15px 34px rgba(87,85,216,.20)}
+.welcome h1,.welcome .heroMark{color:#fff}
+.welcome p,.eyebrow{color:#F2EEFF}
+.heroMark{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45)}
+.card,.metric,.quick,.search,.xbtn,.iconbtn,.checkrow label,.btn.ghost,.field input,.field select,.field textarea{
+  background:#FFFFFF;color:var(--ink);border-color:var(--line);
+}
+.card,.metric,.quick{box-shadow:var(--shadow)}
+.card{border-radius:19px}
+.metric{border-radius:20px;background:linear-gradient(170deg,#fff,#FCFDFF)}
+.metric .metricicon{background:#E7F0FF;color:#3658DD}
+.metrics>.metric:nth-child(2) .metricicon{background:#DAF9F0;color:#007F71}
+.metrics>.metric:nth-child(3) .metricicon{background:#FFF1D6;color:#A46A06}
+.metrics>.metric:nth-child(4) .metricicon{background:#F7E7FF;color:#864AC7}
+.amount,.quick span,.tab.active,.receiptlink,.green-val{color:var(--green)}
+.btn.primary{background:linear-gradient(110deg,#3D62EA,#6554E8);color:#fff;box-shadow:0 5px 15px rgba(60,85,226,.16)}
+.btn.primary:active{filter:brightness(.95)}
+.btn.secondary{background:#E5F3FF;color:#294FB4}
+.btn.ghost{background:#fff;color:var(--ink)}
+.btn.danger{background:#FFE7ED;color:#B5244B}
+.btn:disabled{opacity:.55}
+.btn:focus-visible,.tab:focus-visible,.iconbtn:focus-visible,.chip:focus-visible,.segment:focus-visible,.route-switch:focus-visible,
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(61,98,234,.48);outline-offset:2px}
+.search:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:#5C7BF0;box-shadow:0 0 0 3px rgba(61,98,234,.13)}
+input::placeholder,textarea::placeholder{color:#8593AA;opacity:1}
+.pill{background:#EDF1FA;color:#596B83}
+.pill.green{background:#D9F8EB;color:#006A56}
+.pill.red{background:#FFE5ED;color:#AC234B}
+.pill.amber{background:#FFF0D1;color:#895408}
+.progress,.quality-progress{background:#E4ECF8}
+.progress i,.quality-progress i{background:linear-gradient(90deg,#10B7A0,#3F80EF)}
+.tab{color:#708098}
+.tab.active{color:#3B5BDB}
+.tab.active span{background:#E5EBFF;color:#3956CD}
+.fab{background:linear-gradient(140deg,#426BF3,#7650E8);color:#fff;box-shadow:0 10px 25px rgba(72,80,215,.28)}
+.modalback{background:rgba(15,29,62,.35)}
+.modal{background:#F7F9FF;border:1px solid #DCE5F5;box-shadow:0 -8px 30px rgba(28,41,98,.12)}
+.field input,.field select,.field textarea{background:#fff;color:var(--ink);border-color:#CDD9EF}
+.field label{color:#3F506B}
+.xbtn,.iconbtn{background:#F4F7FF;color:#3657D5}
+.detailbox{background:#EFF5FF}
+.detailbox small{color:#63748C}
+.empty{background:#FFF;color:var(--muted);border-color:#C4D6EE}
+.empty b{color:var(--ink)}
+.note,.soft-warning{background:#FFF5DF;border:1px solid #F5D993;color:#835812}
+.installhint{background:#E6F7F3;color:#135F57}
+.toast{background:#25365D;color:#fff;box-shadow:0 8px 25px rgba(34,49,89,.18)}
+.hero-cash{background:linear-gradient(125deg,#197DB8,#3D5BD7 65%,#705ADD);border-color:rgba(65,93,216,.2)}
+.hero-cash strong{color:#fff}
+.hero-cash .sub{color:#E7F4FF}
+.segments{background:#EAF0FF;border-color:#D7E1F9}
+.segment{color:#536786}
+.segment.active{background:#fff;color:#3556C9;box-shadow:0 3px 9px rgba(55,82,165,.10)}
+.compact-summary{background:#EDF6FF;border-color:#C9DCF6;color:#4B617C}
+.compact-summary strong{color:#214E9D}
+.chip{background:#fff;color:#506486;border-color:#D8E2F4}
+.chip.active{background:#3D62EA;color:#fff;border-color:#3D62EA;box-shadow:0 4px 14px rgba(61,98,234,.18)}
+.icon-dots{background:#F3F6FE;color:#3451B2;border-color:#DCE5F5}
+.clavo-alert{border-color:#F1C581;background:#FFF8E9}
+.clavo-alert strong{color:#88550A}
+.danger-zone{background:#FFF8F9;border-color:#F2BACA}
+.mini-bars .bar-plot{background:#EFF3FD}
+.mini-bars .bar-plot i{background:linear-gradient(#40D7C1,#098A8A)}
+.bar-col small{color:var(--muted)}
+.menu-choice,.client-option{background:#fff;color:var(--ink);border-color:#DCE5F5}
+.danger-choice{color:#B5244B;background:#FFF1F4;border-color:#F4C2CF}
+.client-option.selected{background:#E5F1FF;border-color:#5278EB}
+.choice-mark{color:#375FDE}
+.client-option.selected .choice-mark{color:#375FDE}
+.doc-upload{background:#EDFAFF;border:1px dashed #7FC6DD;color:var(--ink)}
+.doc-upload-icon{color:#1B75B9}
+.doc-upload small{color:#526F82}
+.doc-upload input[type=file]{border-color:#C3DDEC;color:var(--ink)}
+.doc-upload input[type=file]::file-selector-button{background:#DCEFFF;color:#2453A5}
+.doc-entry{border-color:#CBE6E4}
+.doc-row{background:#F2F7FF;border-color:#DFE7F5}
+.doc-icon{background:#E1F0FF;color:#2854B9}
+.doc-links a,.doc-links button{color:#3154BC}
+.doc-links .doc-remove,.doc-invalid{color:var(--red)}
+.upcoming-credit-card{border-color:#D8E4F5}
+.upcoming-values>div{background:#EFF5FF}
+.upcoming-values small,.upcoming-installment span small{color:var(--muted)}
+.upcoming-values b{color:var(--ink)}
+.upcoming-details{background:#FAFCFF;border-color:#DBE5F5}
+.upcoming-details summary{color:#2958BB}
+.upcoming-details summary:focus-visible{outline-color:#4971EE}
+.installment-list{border-color:#DBE5F5}
+.upcoming-installment{border-color:#E3EAF6}
+.upcoming-installment strong{color:#087F75}
+.cash-clarity{border-color:#A9DCDD}
+.cash-clarity-heading{color:#126E81}
+.red-val{color:var(--red)!important}
+.report-month-card{background:linear-gradient(125deg,#FFFFFF,#EEF4FF);border-color:#CFE0FF}
+.report-month-card .search{color-scheme:light}
+.report-section>span{color:#3B58CC}
+.report-section h3{color:var(--ink)}
+.report-section p{color:var(--muted)}
+.report-metric{background:#fff;border-color:#DCE5F5;box-shadow:0 5px 15px rgba(45,77,153,.04)}
+.report-metric.highlight{background:linear-gradient(145deg,#E5F4FF,#E9E7FF);border-color:#BFD1FF}
+.report-metric-icon{background:#E4ECFF;color:#4264D7}
+.report-metric-value{color:var(--ink)}
+.report-metric-label{color:var(--muted)}
+.report-pill{background:#E8F1FF;color:#2E50BF;border-color:#C8D9FF}
+.daily-chart{background:linear-gradient(180deg,#FFFFFF,#F1F6FF);border-color:#DCE5F5}
+.axis-dates{color:var(--muted)}
+.donut-hole{background:#FFFFFF;box-shadow:0 0 0 5px #fff6}
+.donut-hole small,.donut-legend>div>span:not(.legend-dot){color:var(--muted)}
+.donut-hole b,.donut-legend>div>b{color:var(--ink)}
+.green-dot{background:#12B99F}
+.blue-dot{background:#5679F3}
+.amber-dot{background:#FFB84A}
+.pink-dot{background:#FF638A}
+.comparison-legend span{color:#526984}
+.comparison-legend i{background:#13B9A5}
+.comparison-legend span:nth-child(2) i{background:#4D6FEA}
+.comparison-month>span{color:var(--muted)}
+.comparison-pair{border-color:#D0DBEE;background:repeating-linear-gradient(to top,transparent,transparent 27px,#E5EBF6 28px)}
+.comparison-col i{background:linear-gradient(0deg,#0D9488,#4FD4C1)}
+.comparison-col.payments i{background:linear-gradient(0deg,#3860E7,#9CB0FF)}
+.report-stat-row{border-color:#E2EAF5}
+.report-stat-row span,.horizontal-bar-label{color:var(--muted)}
+.report-stat-row strong,.horizontal-bar-value{color:var(--ink)}
+.horizontal-bar-track{background:#E6EDFA}
+.horizontal-bar-track i{background:#0FB6A2}
+.horizontal-bar-row:nth-of-type(2) .horizontal-bar-track i,.expense-bar .horizontal-bar-track i{background:#E7587C}
+.note-card{border-color:#DCE5F5}
+.cash-reopen,.cash-reopen-hero{background:#E5F8F1;border-color:#B7E5D2}
+.cash-reopen span{color:#4C6D63}
+.cash-reopen strong{color:#006B58}
+.integrity-panel{border-color:#B5E3D8}
+.integrity-tag.success{background:#D9F7E8;color:#006B55}
+.integrity-tag.amber{background:#FFF1D3;color:#895408}
+.integrity-tag.danger{background:#FFE5EA;color:#A9234B}
+.integrity-grid>div{background:#F1F6FF;border-color:#DAE5F5}
+.integrity-grid strong,.integrity-issue b{color:var(--ink)}
+.integrity-grid small,.integrity-issue p{color:var(--muted)}
+.integrity-issue{background:#F8FAFF;border-color:#D8A944}
+.integrity-issue.error{border-color:#C82D57}
+.maps-client-field>small b{color:#166E7D}
+.maps-result{background:#E3F7F5;color:#17685F!important}
+.client-map-card{background:linear-gradient(115deg,#F2FBFF,#EEF6FF);border-color:#B9DCEB}
+.client-map-link{color:#2959C3}
+.route-switch{background:#EEF3FF;color:#2F4FB9;border-color:#CCD8F6}
+.route-item{background:#FFF;border-color:#DFE7F5}
+.route-item.route-active{background:#ECF4FF;border-color:#5577EC}
+.client-quality-inline,.quality-history .row{border-color:#DFE7F5}
+.quality-score strong{color:#2457C4}
+.quality-history .row{color:var(--ink)}
+.payment-stepper{background:#EDF3FF;border-color:#D3E0F8}
+.payment-quota-summary{background:#DEF8F0;color:#075E56}
+.drive-settings-card{border-color:#B9DED6}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

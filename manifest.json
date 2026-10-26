@@ -1,15 +1,15 @@
 {
   "id": "./",
-  "name": "Mi Cartera · iPhone 3.4",
+  "name": "Mi Cartera · iPhone 3.4.3",
   "short_name": "Mi Cartera",
-  "description": "Mi Cartera iPhone 3.4 con rutas independientes, historial de puntualidad, Google Maps y documentos.",
+  "description": "Mi Cartera iPhone 3.4.3 con rutas independientes, historial de puntualidad, Google Maps, documentos y copias en Drive.",
   "lang": "es",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0b1220",
-  "theme_color": "#0b1220",
+  "background_color": "#f4f7ff",
+  "theme_color": "#f4f7ff",
   "icons": [
     {
       "src": "icon-192.png",

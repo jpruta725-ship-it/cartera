@@ -1,3 +1,21 @@
+# Mi Cartera iPhone 3.4.3 · Tema claro y vibrante
+
+Versión **PWA local para iPhone**, con la nueva paleta clara, colores vivos y todas las funcionalidades previas de la 3.4.2 (rutas independientes, puntaje, Google Maps, cuotas múltiples, documentos, Google Drive, Caja y Clavos).
+
+**Actualización:** abre `NOVEDADES-3.4.3.md` para instrucciones de publicación y precauciones con la caché de Safari.
+
+**Datos:** misma clave local y mismos formatos que 3.4.2. Los archivos JSON con documentos no están cifrados, no los subas a GitHub público. Antes de actualizar guarda un respaldo fuera del iPhone.
+
+---
+
+# Mi Cartera iPhone 3.4.2
+
+Nueva función: copias de seguridad en Google Drive. Revisa `NOVEDADES-3.4.2.md` para la configuración, limitaciones y modo Compartir.
+
+# Mi Cartera iPhone 3.4.1
+
+**Novedad:** selector de 1 o varias cuotas al registrar un abono, con cálculo de importe sugerido y abonos parciales. Consulta `NOVEDADES-3.4.1.md`.
+
 # Mi Cartera para iPhone 3.4 — Rutas y puntaje de clientes
 
 PWA local para iPhone en español y reales brasileños, con diseño oscuro.

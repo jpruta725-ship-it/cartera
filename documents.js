@@ -157,8 +157,10 @@ async function docBackupRecords(){const entries=await docAll();const out=[];
 exportBackup=async function(){
  try{const attachments=await docBackupRecords();const backup={...data,clientDocuments:attachments,backupCreatedAt:new Date().toISOString(),backupVersion:'2.8-documents'};
   const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
-  downloadBlob(blob,`MiCartera-iPhone-completa-${today()}.json`);
-  notify(`Respaldo preparado (${attachments.length} documento(s))`);
+  const dt=new Date(),stamp=`${today()}_${String(dt.getHours()).padStart(2,'0')}${String(dt.getMinutes()).padStart(2,'0')}${String(dt.getSeconds()).padStart(2,'0')}`;
+  const prepared={blob,filename:`MiCartera-RUTA-${stamp}.json`,routeCount:1,documentCount:attachments.length};
+  if(typeof window.MiCarteraBackupDelivery==='function')await window.MiCarteraBackupDelivery(prepared);
+  else{downloadBlob(prepared.blob,prepared.filename);notify(`Respaldo preparado (${attachments.length} documento(s))`);}
  }catch(err){alert(`No se exportó una copia completa porque falló la lectura de documentos: ${docErrMessage(err)}. No borres la aplicación ni los archivos actuales.`)}
 };
 function docVerifyBackup(files,ids){

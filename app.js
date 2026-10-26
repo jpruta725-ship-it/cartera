@@ -139,7 +139,97 @@ function addLoan(existing=null,clientId=null){if(isDayClosed()){notify('Caja cer
  if(Math.abs(delta)>0.005){data.cashBase=round(Number(data.cashBase||0)+delta);addCorrection(delta,'Edición de capital · '+vals.title,existing.id)}
  Object.assign(existing,vals)
  }else{const newLoan={id:id(),...vals};data.loans.push(newLoan);data.cashBase=round((Number(data.cashBase)||0)-Number(vals.principal));data.movements.push({id:id(),kind:'Egreso',amount:Number(vals.principal),date:today(),concept:'Capital entregado: '+vals.title,createdAt:Date.now(),loanId:newLoan.id});}save();closeModal();render();notify(existing?'Crédito actualizado':'Crédito creado')});const principalInput=$('#f-principal'),interestInput=$('#f-interest'),countInput=$('#f-count');const preview=()=>{const p=Number(principalInput.value)||0,i=Number(interestInput.value)||0,n=Number(countInput.value)||1;$('#loanPreview').innerHTML=`Total del crédito: <b>${money(p*(1+i/100))}</b><br>Cuota estimada: <b>${money(p*(1+i/100)/n)}</b> · Interés calculado sobre capital original.`};[principalInput,interestInput,countInput].forEach(el=>el.addEventListener('input',preview));preview()}
-function addPayment(loanId=null,clientId=null){if(isDayClosed()){notify('Caja cerrada hasta las 00:00 del día siguiente al cierre.');return}let options=data.loans.filter(l=>balance(l)>.009&&(!clientId||l.clientId===clientId));if(loanId)options=data.loans.filter(l=>l.id===loanId);if(!options.length){notify('No hay créditos con saldo para cobrar');return}const opt=options.map(l=>`<option value="${l.id}" ${l.id===loanId?'selected':''}>${esc(client(l.clientId)?.name||'Cliente')} · ${esc(l.title)} (${money(balance(l))} pendiente)</option>`).join('');openModal('Registrar abono',`<div class="formgrid">${field('Crédito *','loanId','','select',{required:true,options:opt,full:true})}${field('Importe recibido (R$) *','amount',round(suggestedPayment(options.find(l=>l.id===loanId)||options[0])),'number',{required:true,attrs:'min="0.01" step="0.01"'})}${field('Fecha del cobro *','date',today(),'date',{required:true})}${field('Concepto / nota','note','','text',{full:true})}<div class="field full"><label>Adjuntar comprobante (imagen o PDF)</label><input name="receipt" type="file" accept="image/*,application/pdf"><div class="sub">Se guardará en los datos locales. Los archivos grandes ocupan más espacio.</div></div><div class="field full" id="paymentPreview"></div></div>`,`Guardar abono`,async(f,form)=>{if(isDayClosed()){closeModal();render();notify('Caja cerrada hasta las 00:00 del día siguiente al cierre.');return}const payDate=f.get('date');if(payDate>today()){notify('No puedes registrar un pago con fecha futura.');return}if(isDayClosed(payDate)){notify('Ese día ya está cerrado y no admite nuevos pagos.');return}const l=loan(f.get('loanId')),amount=round(Number(f.get('amount')));if(!l||amount<=0){notify('Introduce un importe válido');return}if(amount>balance(l)+.009){notify('El abono supera el saldo pendiente. Revisa el importe.');return}let receipt='';const file=form.querySelector('[name=receipt]').files[0];if(file){if(file.size>600*1024){notify('El comprobante supera 600 KB. Elige una imagen o PDF más pequeño.');return}receipt=await fileToDataURL(file)}if(isDayClosed()||isDayClosed(payDate)){notify('La caja está cerrada para esa fecha. No se registró el pago.');return}data.payments.push({id:id(),loanId:l.id,amount,date:payDate,note:f.get('note').trim(),receipt,fileName:file?.name||'',createdAt:Date.now()});data.cashBase=round((Number(data.cashBase)||0)+amount);save();closeModal();render();notify('Abono registrado')});const picker=$('#f-loanId');picker?.addEventListener('change',()=>{const selected=loan(picker.value);if(selected)$('#f-amount').value=String(round(suggestedPayment(selected)))});}
+// Cobro de una o varias cuotas: el selector empieza siempre en 1.
+// La distribución real permanece en paymentSchedule (abonos aplicados a cuotas en orden).
+function pendingInstallmentsForPayment(l){
+ if(!l)return [];
+ return paymentSchedule(l).filter(q=>Number.isFinite(Number(q.unpaid))&&Number(q.unpaid)>.005);
+}
+function paymentSuggestionForInstallments(l,count=1){
+ if(!l)return 0;
+ const pending=pendingInstallmentsForPayment(l);
+ const safeCount=Math.max(1,Math.min(pending.length,Math.trunc(Number(count)||1)));
+ // Sumar centavos, no flotantes, para conservar importes exactos de cuotas parciales.
+ const cents=pending.slice(0,safeCount).reduce((sum,q)=>sum+Math.round(Number(q.unpaid)*100),0);
+ return Math.min(Math.round(balance(l)*100),cents)/100;
+}
+function addPayment(loanId=null,clientId=null){
+ if(isDayClosed()){
+  notify('Caja cerrada hasta las 00:00 del día siguiente al cierre.');return;
+ }
+ let options=data.loans.filter(l=>balance(l)>.009&&(!clientId||l.clientId===clientId));
+ if(loanId)options=options.filter(l=>l.id===loanId);
+ if(!options.length){notify('No hay créditos con saldo para cobrar');return}
+ const selected=options.find(l=>l.id===loanId)||options[0];
+ const optionMarkup=options.map(l=>`<option value="${esc(l.id)}" ${l.id===selected.id?'selected':''}>${esc(client(l.clientId)?.name||'Cliente')} · ${esc(l.title||'Crédito')} (${money(balance(l))} pendiente)</option>`).join('');
+ openModal('Registrar abono',`<div class="formgrid">
+  ${field('Crédito *','loanId','','select',{required:true,options:optionMarkup,full:true})}
+  <div class="field full"><label for="f-installmentCount">Cuotas que deseas pagar</label>
+   <div class="payment-stepper" role="group" aria-label="Cantidad de cuotas a pagar">
+    <button type="button" id="quotaMinus" class="btn secondary" aria-label="Quitar una cuota">−</button>
+    <input id="f-installmentCount" name="installmentCount" type="number" min="1" max="1" step="1" value="1" inputmode="numeric" required aria-label="Cantidad de cuotas" />
+    <button type="button" id="quotaPlus" class="btn secondary" aria-label="Agregar una cuota">＋</button>
+   </div>
+   <div id="quotaSummary" class="payment-quota-summary" aria-live="polite"></div>
+  </div>
+  ${field('Importe recibido (R$) *','amount',paymentSuggestionForInstallments(selected,1),'number',{required:true,attrs:'min="0.01" step="0.01"'})}
+  <div class="field full"><div class="sub">Importe sugerido según las cuotas seleccionadas. Puedes modificarlo para registrar un abono parcial o diferente.</div></div>
+  ${field('Fecha del cobro *','date',today(),'date',{required:true})}
+  ${field('Concepto / nota','note','','text',{full:true})}
+  <div class="field full"><label>Adjuntar comprobante (imagen o PDF)</label><input name="receipt" type="file" accept="image/*,application/pdf"><div class="sub">Se guardará en los datos locales. Máximo 600 KB por comprobante.</div></div>
+ </div>`, 'Guardar abono',async(f,form)=>{
+  if(isDayClosed()){closeModal();render();notify('Caja cerrada hasta las 00:00 del día siguiente al cierre.');return}
+  const payDate=f.get('date');
+  if(payDate>today()){notify('No puedes registrar un pago con fecha futura.');return}
+  if(isDayClosed(payDate)){notify('Ese día ya está cerrado y no admite nuevos pagos.');return}
+  const l=loan(f.get('loanId'));
+  const amount=round(Number(f.get('amount')));
+  const chosenCount=Number(f.get('installmentCount'));
+  const available=l?pendingInstallmentsForPayment(l).length:0;
+  if(!l||!options.some(x=>x.id===l.id)||!Number.isInteger(chosenCount)||chosenCount<1||chosenCount>available){notify('Selecciona un crédito y una cantidad válida de cuotas.');return}
+  if(!Number.isFinite(amount)||amount<=0){notify('Introduce un importe válido.');return}
+  if(Math.round(amount*100)>Math.round(balance(l)*100)){notify('El abono supera el saldo pendiente. Revisa el importe.');return}
+  let receipt='';
+  const file=form.querySelector('[name=receipt]')?.files?.[0];
+  if(file){
+   if(file.size>600*1024){notify('El comprobante supera 600 KB. Elige una imagen o PDF más pequeño.');return}
+   receipt=await fileToDataURL(file);
+  }
+  if(isDayClosed()||isDayClosed(payDate)){notify('La caja está cerrada para esa fecha. No se registró el pago.');return}
+  data.payments.push({id:id(),loanId:l.id,amount,date:payDate,note:String(f.get('note')||'').trim(),receipt,fileName:file?.name||'',selectedInstallments:chosenCount,createdAt:Date.now()});
+  data.cashBase=round((Number(data.cashBase)||0)+amount);
+  if(!save())return;
+  closeModal();render();notify(`Abono registrado · ${chosenCount} cuota(s) seleccionada(s)`);
+ });
+ const picker=$('#f-loanId');
+ const countInput=$('#f-installmentCount');
+ const amountInput=$('#f-amount');
+ const summary=$('#quotaSummary');
+ const minus=$('#quotaMinus'),plus=$('#quotaPlus');
+ function updateQuotaSuggestion(resetCount=false){
+  const selectedLoan=loan(picker.value);
+  const pending=pendingInstallmentsForPayment(selectedLoan);
+  const max=Math.max(1,pending.length);
+  countInput.max=String(max);
+  const requested=resetCount?1:Math.trunc(Number(countInput.value)||1);
+  const quantity=Math.max(1,Math.min(max,requested));
+  countInput.value=String(quantity);
+  minus.disabled=quantity<=1;
+  plus.disabled=quantity>=max;
+  const chosen=pending.slice(0,quantity);
+  const suggested=paymentSuggestionForInstallments(selectedLoan,quantity);
+  amountInput.value=suggested.toFixed(2);
+  const installmentList=chosen.map(q=>`#${q.number}`).join(', ');
+  summary.textContent=chosen.length?
+    `Cuota${chosen.length===1?'':'s'} ${installmentList} · Total sugerido: ${money(suggested)} · Saldo del crédito: ${money(balance(selectedLoan))}`:
+    'Este préstamo ya no tiene cuotas pendientes.';
+ }
+ minus.addEventListener('click',()=>{countInput.value=String(Number(countInput.value)-1);updateQuotaSuggestion()});
+ plus.addEventListener('click',()=>{countInput.value=String(Number(countInput.value)+1);updateQuotaSuggestion()});
+ countInput.addEventListener('change',()=>updateQuotaSuggestion());
+ picker.addEventListener('change',()=>updateQuotaSuggestion(true));
+ updateQuotaSuggestion(true);
+}
 function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 function addBase(){if(isDayClosed()){notify('Caja cerrada. Se abre a las 00:00 del día siguiente.');return}openModal('Agregar dinero a caja base',`<div class="formgrid">${field('Importe (R$) *','amount','','number',{required:true,attrs:'min="0.01" step="0.01"'})}${field('Fecha *','date',today(),'date',{required:true})}${field('Concepto','concept','Aporte a caja base','text',{full:true})}</div>`,'Agregar dinero',f=>{const amount=round(Number(f.get('amount')));if(amount<=0){notify('Introduce un importe válido');return}data.cashBase=round((Number(data.cashBase)||0)+amount);data.movements.push({id:id(),kind:'Aporte a caja base',amount,date:f.get('date'),concept:f.get('concept').trim()||'Aporte a caja base',createdAt:Date.now()});save();closeModal();render();notify('Dinero agregado a caja base')})}
 function addMovement(){if(isDayClosed()){notify('Caja cerrada. Se abre a las 00:00 del día siguiente.');return}openModal('Movimiento de caja',`<div class="formgrid">${field('Tipo','kind','','select',{options:'<option>Ingreso</option><option>Egreso</option><option>Aporte a caja base</option>'})}${field('Importe (R$) *','amount','','number',{required:true,attrs:'min="0.01" step="0.01"'})}${field('Fecha *','date',today(),'date',{required:true})}${field('Concepto *','concept','','text',{required:true,full:true})}</div>`, 'Guardar movimiento',f=>{const amount=round(Number(f.get('amount'))),concept=f.get('concept').trim();if(amount<=0||!concept){notify('Completa importe y concepto');return}const kind=f.get('kind');data.movements.push({id:id(),kind,amount,date:f.get('date'),concept,createdAt:Date.now()});if(kind==='Ingreso'||kind==='Aporte a caja base')data.cashBase=round((Number(data.cashBase)||0)+amount);else data.cashBase=round((Number(data.cashBase)||0)-amount);save();closeModal();render();notify('Movimiento guardado')})}

@@ -115,10 +115,10 @@
     const max=Math.max(1,...arr.map(d=>Number(d[valueField])||0));
     return arr.map(d=>`<div class="horizontal-bar-row ${d[textField]==='Egresos'?'expense-bar':''}"><div class="horizontal-bar-label">${esc(d[textField])}</div><div class="horizontal-bar-track"><i style="width:${(Math.max(0,d[valueField])/max*100).toFixed(2)}%"></i></div><div class="horizontal-bar-value">${currencyCompact(d[valueField])}</div></div>`).join('');
   };
-  const pieCss = (a,b,col1='#34d399',col2='#38bdf8') => {
+  const pieCss = (a,b,col1='#0DB5A0',col2='#5B79EF') => {
     const total=a+b;
     const pct=total?Math.max(0,Math.min(100,a/total*100)):0;
-    return total?`conic-gradient(${col1} 0 ${pct.toFixed(2)}%,${col2} ${pct.toFixed(2)}% 100%)`:'conic-gradient(#32455e 0 100%)';
+    return total?`conic-gradient(${col1} 0 ${pct.toFixed(2)}%,${col2} ${pct.toFixed(2)}% 100%)`:'conic-gradient(#E3EAF6 0 100%)';
   };
   const trendLine = (daily,days) => {
     const width=680,height=188,padX=22,padY=17;
@@ -126,8 +126,8 @@
     const points=daily.map((v,i)=>[padX+i*(width-2*padX)/Math.max(1,days-1),height-padY-(Number(v)/peak)*(height-2*padY)]);
     const poly=points.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
     const fill=`${padX},${height-padY} ${poly} ${width-padX},${height-padY}`;
-    const nums=[0,.5,1].map(r=>{const y=height-padY-r*(height-2*padY);return `<line x1="${padX}" y1="${y}" x2="${width-padX}" y2="${y}" stroke="#34445d" stroke-dasharray="4 7" stroke-width="1"/>`}).join('');
-    return `<div class="daily-chart"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de cobros diarios del mes" preserveAspectRatio="none">${nums}<polygon points="${fill}" fill="#34d399" fill-opacity=".09"/><polyline points="${poly}" stroke="#34d399" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />${points.filter((_,i)=>daily[i]>0).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6" fill="#a7f3d0"/>`).join('')}</svg><div class="axis-dates"><span>1</span><span>${Math.ceil(days/4)}</span><span>${Math.ceil(days/2)}</span><span>${Math.ceil(days*3/4)}</span><span>${days}</span></div></div>`;
+    const nums=[0,.5,1].map(r=>{const y=height-padY-r*(height-2*padY);return `<line x1="${padX}" y1="${y}" x2="${width-padX}" y2="${y}" stroke="#DDE6F5" stroke-dasharray="4 7" stroke-width="1"/>`}).join('');
+    return `<div class="daily-chart"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de cobros diarios del mes" preserveAspectRatio="none">${nums}<polygon points="${fill}" fill="#0DB5A0" fill-opacity=".09"/><polyline points="${poly}" stroke="#0F9E99" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />${points.filter((_,i)=>daily[i]>0).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.6" fill="#0DB5A0"/>`).join('')}</svg><div class="axis-dates"><span>1</span><span>${Math.ceil(days/4)}</span><span>${Math.ceil(days/2)}</span><span>${Math.ceil(days*3/4)}</span><span>${days}</span></div></div>`;
   };
 
   // Reporte visual único y comprobable, sin bibliotecas ni conexiones externas.
@@ -164,7 +164,7 @@
     <div class="report-metrics">${chartMetric('Capital prestado este mes',price(principal),'▤')}${chartMetric('Interés previsto',price(forecast),'◇')}${chartMetric('Créditos iniciados',String(ls.length),'♙')}${chartMetric('Saldo pendiente activo',price(activeBalance),'◷')}</div>
     <div class="card report-card"><div class="cardtitle">Evolución · últimos seis meses</div><div class="sub">Capital prestado frente a cobros realmente recibidos</div><div class="comparison-legend"><span><i></i>Capital prestado</span><span><i></i>Cobros</span></div><div class="comparison-chart">${historical}</div><div class="sub">Mes seleccionado y cinco anteriores · gráfico a escala relativa</div></div>
     ${chartSection('03 · SALDOS','Estado actual de la cartera','Los Clavos permanecen separados de la cartera habitual.')}
-    <div class="card report-card"><div class="donut-layout"><div class="report-donut" style="background:${pieCss(activeBalance,clavoBalance,'#34d399','#fbbf24')}"><div class="donut-hole"><small>Total pendiente</small><b>${currencyCompact(activeBalance+clavoBalance)}</b></div></div><div class="donut-legend"><div><span class="legend-dot green-dot"></span><span>Cartera normal</span><b>${price(activeBalance)}</b></div><div><span class="legend-dot amber-dot"></span><span>Clavos</span><b>${price(clavoBalance)}</b></div><div><span class="legend-dot pink-dot"></span><span>Vencido (normal)</span><b>${price(pastDue)}</b></div><div><span class="sub">${active.length} activos · ${cl.length} Clavos</span></div></div></div></div>
+    <div class="card report-card"><div class="donut-layout"><div class="report-donut" style="background:${pieCss(activeBalance,clavoBalance,'#0DB5A0','#FFB84A')}"><div class="donut-hole"><small>Total pendiente</small><b>${currencyCompact(activeBalance+clavoBalance)}</b></div></div><div class="donut-legend"><div><span class="legend-dot green-dot"></span><span>Cartera normal</span><b>${price(activeBalance)}</b></div><div><span class="legend-dot amber-dot"></span><span>Clavos</span><b>${price(clavoBalance)}</b></div><div><span class="legend-dot pink-dot"></span><span>Vencido (normal)</span><b>${price(pastDue)}</b></div><div><span class="sub">${active.length} activos · ${cl.length} Clavos</span></div></div></div></div>
     ${chartSection('04 · MOVIMIENTOS','Caja y operaciones del mes','Capital entregado y anulaciones NO se suman a egresos operativos.')}
     <div class="card report-card">${reportRow('Ingresos y aportes',ingresos,'green-val')}${reportRow('Egresos operativos',egresos)}${reportRow('Desembolsos de créditos (separados)',disbursed)}${reportRow('Ajustes netos / anulaciones',adjusts,adjusts>=0?'green-val':'red-val')}<div class="divider"></div><div class="cardtitle">Ingresos y egresos operativos</div>${visualBars([{name:'Ingresos',value:ingresos},{name:'Egresos',value:egresos}])}<p class="sub">Al borrar un crédito también desaparecen sus abonos; la Caja se corrige, pero la anulación no se contabiliza como gasto ni como venta.</p></div>
     <div class="card report-card note-card"><div class="cardtitle">Cómo leer este reporte</div><p class="sub">Los valores de capital e interés recibidos son estimaciones proporcionales. Los créditos eliminados dejan de figurar como cartera activa, pero los movimientos de desembolso y anulación se conservan en el historial de Caja. Los cierres anteriores no se recalculan. Para comparar periodos, elige otro mes arriba.</p></div>`;

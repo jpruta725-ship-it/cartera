@@ -1,8 +1,9 @@
 'use strict';
-/* Mi Cartera iPhone 3.4.2 — Copias de seguridad en Google Drive.
+/* Mi Cartera iPhone 3.4.5 — Copias de seguridad en Google Drive.
  * La PWA nunca guarda contraseñas, refresh tokens ni access tokens permanentes.
  * Subida directa solo con OAuth explícito y Google Drive API habilitada.
- * Fallback disponible: Compartir en Drive (hoja nativa de iOS) o descargar JSON.
+ * Fallback fiable: descargar JSON y subirlo manualmente a Google Drive.
+ * Compartir mediante la hoja nativa es opcional y puede ser denegado por el navegador.
  */
 (function () {
   const CONFIG_KEY='micartera.drive.config.v1';
@@ -19,6 +20,7 @@
   } catch(_) { /* sin configuración previa */ }
   let accessToken='',expiryAt=0,folderId='',busy=false,sharePrepared=null,gisPromise=null;
   let sharePreparedName='';
+  let preparedForManual=null;
   const connected=()=>Boolean(accessToken && Date.now()<expiryAt-60_000);
   function persist(){
     try {localStorage.setItem(CONFIG_KEY,JSON.stringify(config));return true}
@@ -41,17 +43,18 @@
     const oauthOn=!!config.clientId;
     return `<div class="card drive-settings-card">
       <div class="cardtitle">☁ Copias de seguridad en Google Drive</div>
-      <p class="sub">Guarda <b>todas las rutas y sus documentos</b> fuera del iPhone. La subida directa necesita internet, autorización de Google y configurar un cliente OAuth web.</p>
+      <p class="sub">Guarda <b>todas las rutas y sus documentos</b> fuera del iPhone. La forma más compatible es <b>descargar el JSON y subirlo a Google Drive</b>. La subida directa requiere autorización OAuth.</p>
       <div class="drive-state"><span class="pill ${connected()?'green':'amber'}">${connected()?'Autorizado':oauthOn?'Sin sesión activa':'Sin configurar'}</span><span class="sub">${readinessText()}</span></div>
       ${oauthOn?`<div class="drive-actions">${btn(connected()?'↻ Renovar autorización':'Conectar Google Drive','drive-authorize','secondary')}${btn('⚙ Configurar acceso','drive-config','ghost')}</div>`:
                  `<div class="drive-actions">${btn('⚙ Configurar subida directa','drive-config','secondary')}</div>`}
       <div class="drive-actions">
-        ${btn('☁ Guardar respaldo en Drive','drive-upload','primary')}
-        ${btn('Compartir con Google Drive','drive-prepare-share','secondary')}
-        ${btn('Descargar JSON local','drive-download','ghost')}
+        ${btn('⬇ Descargar respaldo completo','drive-download','primary')}
+        ${btn('Abrir Google Drive para subirlo','drive-open-site','secondary')}
+        ${btn('Intentar Compartir (según navegador)','drive-prepare-share','ghost')}
+        ${btn('☁ Subida directa autorizada','drive-upload','ghost')}
       </div>
       <p class="sub">${lastText()}</p>
-      <div class="note">${config.mode==='drive'?'Al usar «Exportar copia» intentará subir directamente a Drive. Si la autorización caduca o falla la subida, ofrecerá una copia local e indicará el error.':'Sin autorización directa, el botón habitual «Exportar copia» descarga el JSON. Para compartirlo en Drive, utiliza el botón «Compartir».'}</div>
+      <div class="note">${config.mode==='drive'?'Al usar «Exportar copia» se intentará subir directamente a Drive. Si falla la autorización, se ofrecerá una copia local.':'Si todavía no configuraste Google, descarga el JSON y súbelo manualmente en Drive. Compartir puede estar bloqueado por Safari, Opera u otros navegadores.'}</div>
       <div class="sub">La primera vez que conectes Google deberás autorizar el acceso. iOS no permite garantizar subidas en segundo plano con la aplicación cerrada. Los respaldos JSON no están cifrados: protege tu cuenta de Google.</div>
     </div>`;
   }
@@ -185,7 +188,9 @@
     if(typeof window.MiCarteraBuildCompleteBackup!=='function')throw Error('No está disponible la copia completa de rutas');
     return window.MiCarteraBuildCompleteBackup();
   }
-  function safeLocalDownload(p){downloadBlob(p.blob,p.filename);notify('Respaldo descargado localmente (no en Google Drive).')}
+  function safeLocalDownload(p){downloadBlob(p.blob,p.filename);notify('Se inició la descarga del respaldo. Comprueba el archivo antes de subirlo a Drive.')}
+  function openDriveSite(){window.open('https://drive.google.com/drive/my-drive','_blank','noopener,noreferrer')}
+  function downloadPrepared(){if(!preparedForManual){notify('Prepara primero el archivo para compartir.');return}safeLocalDownload(preparedForManual)}
   async function deliverBackup(prepared){
     if(busy){notify('Ya hay un respaldo en proceso');return}
     busy=true;
@@ -213,28 +218,52 @@
     try {safeLocalDownload(await buildPrepared())}catch(err){alert('No se pudo crear el respaldo: '+String(err.message||err))}
     finally{busy=false}
   }
+  function showManualBackupInstructions(reason='') {
+    const prepared=preparedForManual;
+    if(!prepared)return;
+    const why=reason?`<div class="note" role="alert"><b>Compartir no está disponible:</b> ${esc(reason)}. No se ha subido ningún archivo a Google Drive.</div>`:'';
+    openModal('Guardar respaldo en Google Drive',`<div class="note"><b>Archivo preparado:</b> ${esc(prepared.filename)}<br>${prepared.routeCount} ruta(s) y ${prepared.documentCount} documento(s).</div>
+      ${why}
+      <p class="sub"><b>Método compatible con PC y iPhone:</b></p>
+      <ol class="sub"><li>Pulsa <b>«Descargar archivo»</b> aquí abajo.</li><li>Comprueba que el JSON exista en Descargas/Archivos.</li><li>Abre <b>Google Drive</b> y súbelo con <b>Nuevo → Subir archivo</b>. En iPhone puedes hacerlo desde Archivos.</li><li>Comprueba que aparezca en Drive. Hasta entonces, <b>no está respaldado en Google</b>.</li></ol>
+      <div class="drive-actions">${btn('⬇ Descargar archivo','drive-download-prepared','primary')}${btn('↗ Abrir Google Drive','drive-open-site','secondary')}</div>
+      <p class="sub">Si el navegador no descarga desde la aplicación instalada, abre Mi Cartera en <b>Safari</b> y utiliza «Descargar respaldo completo» desde allí. No borres los datos de la aplicación.</p>`,
+      'Cerrar',()=>closeModal());
+  }
   async function prepareShareAction(){
     if(busy)return;
     busy=true;
     try {
       const prepared=await buildPrepared();
-      sharePrepared=new File([prepared.blob],prepared.filename,{type:'application/json'});
+      preparedForManual=prepared;
+      sharePrepared=null;
       sharePreparedName=prepared.filename;
-      const canShare=typeof navigator.share==='function' && (!navigator.canShare||navigator.canShare({files:[sharePrepared]}));
+      let canShare=false;
+      try {
+        sharePrepared=new File([prepared.blob],prepared.filename,{type:'application/json'});
+        const policy=document.permissionsPolicy||document.featurePolicy;
+        const allowed=!(policy && typeof policy.allowsFeature==='function') || policy.allowsFeature('web-share');
+        canShare=allowed && typeof navigator.share==='function' && (!navigator.canShare||navigator.canShare({files:[sharePrepared]}));
+      } catch(_) {canShare=false}
       if(!canShare){
-        safeLocalDownload(prepared);
-        alert('Safari no permite compartir este archivo directamente. Se intentó descargar el JSON. Ábrelo en Archivos y usa Compartir → Google Drive.');
+        showManualBackupInstructions('Este navegador no permite compartir archivos directamente');
         return;
       }
-      openModal('Enviar respaldo a Google Drive',`<div class="note">El archivo completo <b>${esc(prepared.filename)}</b> ya está preparado (${prepared.routeCount} ruta(s), ${prepared.documentCount} documento(s)).</div>
-        <p class="sub">Pulsa «Abrir Compartir». En la hoja de iPhone selecciona <b>Google Drive</b> y confirma <b>Guardar/Subir</b>. Hasta confirmar en la app de Drive no se considera respaldado.</p>
-        <p class="sub">Este método no necesita configurar Google Cloud, pero requiere seleccionar Drive manualmente en cada copia.</p>`,
-        'Abrir Compartir',()=>{
-          // La llamada a navigator.share es inmediata al toque, imprescindible para iOS.
-          const promise=navigator.share({files:[sharePrepared],title:'Respaldo Mi Cartera'});
-          promise.then(()=>{closeModal();notify('Archivo compartido. Comprueba que Google Drive haya terminado la subida.');})
-            .catch(err=>{if(err?.name==='AbortError'){notify('Compartir cancelado. No se confirmó un respaldo.');return}alert('No se pudo compartir: '+String(err.message||err))});
-          return promise.catch(()=>{});
+      openModal('Enviar respaldo a Google Drive',`<div class="note">Archivo preparado: <b>${esc(prepared.filename)}</b> (${prepared.routeCount} ruta(s), ${prepared.documentCount} documento(s)).</div>
+        <p class="sub">Puedes intentar abrir el menú Compartir. Si el navegador lo impide, podrás descargar el JSON sin perder la copia.</p>
+        <div class="drive-actions">${btn('⬇ Descargar archivo','drive-download-prepared','secondary')}${btn('↗ Abrir Google Drive','drive-open-site','ghost')}</div>
+        <p class="sub">Compartir un archivo no confirma que Google Drive lo haya guardado. Comprueba la subida en Drive.</p>`,
+        'Intentar compartir',()=>{
+          // La hoja nativa exige interacción directa y permiso del navegador.
+          let sharing;
+          try { sharing=navigator.share({files:[sharePrepared],title:'Respaldo Mi Cartera'}); }
+          catch(err){showManualBackupInstructions(String(err?.message||err||'permiso denegado'));return}
+          return Promise.resolve(sharing).then(()=>{
+            closeModal();notify('El archivo se entregó al menú Compartir. Comprueba su presencia en Google Drive.');
+          }).catch(err=>{
+            if(err?.name==='AbortError'){notify('Compartir cancelado; puedes descargar el archivo en su lugar.');return}
+            showManualBackupInstructions(err?.name==='NotAllowedError'?'Permiso denegado por el navegador':String(err?.message||err||'error de compartir'));
+          });
         });
     }catch(err){alert('No se pudo preparar el respaldo: '+String(err.message||err))}
     finally{busy=false}
@@ -245,6 +274,8 @@
     if(action==='drive-authorize'){authorize();return}
     if(action==='drive-upload'){directUploadAction();return}
     if(action==='drive-download'){localDownloadAction();return}
+    if(action==='drive-download-prepared'){downloadPrepared();return}
+    if(action==='drive-open-site'){openDriveSite();return}
     if(action==='drive-prepare-share'){prepareShareAction();return}
     return previousAction(action);
   };

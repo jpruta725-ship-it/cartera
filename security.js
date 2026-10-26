@@ -1,4 +1,4 @@
-/* Mi Cartera iPhone 3.4.4 — control de acceso local y pantalla discreta.
+/* Mi Cartera iPhone 3.4.7 — PIN, bloqueo por inactividad y al salir configurables.
  * Barrera de privacidad de la interfaz; NO cifra los datos financieros.
  * El PIN nunca se guarda en texto claro. No usa red, cuentas ni backend.
  */
@@ -6,7 +6,15 @@
 (function () {
   const STORAGE_KEY = 'micartera.security.pin.v1';
   const ITERATIONS = 210000;
-  const INACTIVITY_MS = 5 * 60 * 1000;
+  // Se guardan segundos permitidos en la configuración del PIN de este dispositivo.
+  const IDLE_OPTIONS = [30, 60, 120, 300, 600, 900, 1800, 3600];
+  const DEFAULT_IDLE_SECONDS = 300;
+  const idleSeconds = candidate => IDLE_OPTIONS.includes(candidate?.idleLockSeconds)
+    ? candidate.idleLockSeconds : DEFAULT_IDLE_SECONDS;
+  const idleLabel = seconds => seconds < 60 ? `${seconds} segundos` : `${seconds / 60} ${seconds === 60 ? 'minuto' : 'minutos'}`;
+  // Para los PIN creados en versiones anteriores el bloqueo al salir permanece activado.
+  const lockOnExitEnabled = candidate => candidate?.lockOnExit !== false;
+  const idleHelpText = () => `Se bloqueará tras ${idleLabel(idleSeconds(config))} sin actividad${lockOnExitEnabled(config) ? '. También se bloquea inmediatamente si sales o cambias de aplicación.' : ', incluso si cambias temporalmente de aplicación. En una apertura nueva siempre se solicita el PIN.'}`;
   const gate = document.getElementById('securityGate');
   if (!gate) return;
 
@@ -53,7 +61,7 @@
     if (!validPin(pin)) throw new Error('La clave debe tener exactamente 6 dígitos.');
     if (!cryptoReady()) throw new Error('Esta versión necesita HTTPS para proteger la verificación del PIN.');
     const salt = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
-    return {version:1, salt, hash:await hashPin(pin, salt), iterations:ITERATIONS, discreet:Boolean(discreet)};
+    return {version:1, salt, hash:await hashPin(pin, salt), iterations:ITERATIONS, discreet:Boolean(discreet), idleLockSeconds:config ? idleSeconds(config) : DEFAULT_IDLE_SECONDS, lockOnExit:lockOnExitEnabled(config)};
   }
   function showGate() {
     const protectedNow = !!config && !unlocked;
@@ -151,7 +159,22 @@
            ${btn('Cambiar PIN','security-change','secondary')}
            ${btn('Desactivar clave','security-disable','ghost')}
          </div>
-         <div class="note">La pantalla se bloquea al salir de la app o tras 5 minutos sin usarla. El modo discreto sustituye los importes por una pantalla neutra; mantén pulsado el círculo para volver a acceder con tu PIN.</div>`}
+         <div class="field security-idle-setting">
+           <label for="securityIdleDelay">Bloqueo automático por inactividad</label>
+           <select id="securityIdleDelay" aria-describedby="securityIdleHelp">
+             ${IDLE_OPTIONS.map(seconds => `<option value="${seconds}" ${idleSeconds(config) === seconds ? 'selected' : ''}>${idleLabel(seconds)}</option>`).join('')}
+           </select>
+           <p class="sub" id="securityIdleHelp">${idleHelpText()}</p>
+         </div>
+         <div class="field security-exit-setting">
+           <label for="securityLockOnExit">Bloquear al salir de Mi Cartera</label>
+           <select id="securityLockOnExit" aria-describedby="securityExitHelp">
+             <option value="1" ${lockOnExitEnabled(config) ? 'selected' : ''}>Activado (más seguro)</option>
+             <option value="0" ${!lockOnExitEnabled(config) ? 'selected' : ''}>Desactivado</option>
+           </select>
+           <p class="sub" id="securityExitHelp">${lockOnExitEnabled(config) ? 'Al cambiar de app o apagar la pantalla se solicita el PIN al regresar.' : 'Puedes salir y volver sin PIN mientras la sesión siga abierta y no haya vencido el tiempo de inactividad. Al reiniciar la página o la app, se solicita el PIN.'}</p>
+         </div>
+         <div class="note">El modo discreto sustituye los importes por una pantalla neutra; mantén pulsado el círculo para volver a acceder con tu PIN.</div>`}
        <p class="sub security-limit">Protección de pantalla: <b>no cifra la base de datos local</b> ni puede ocultar el icono del sistema. Guarda copias de seguridad y protege el acceso físico al iPhone.</p>
        ${btn('¿Se puede ocultar el icono en iPhone?','security-icon-help','ghost')}
     </div>`;
@@ -226,14 +249,67 @@
     return previousAction(action);
   };
 
-  document.addEventListener('visibilitychange',()=>{if(document.hidden && config)lockNow();});
-  window.addEventListener('pagehide',()=>{if(config)lockNow();});
+  // Delegación: el selector se vuelve a crear al renderizar Ajustes.
+  document.addEventListener('change', event => {
+    if (event.target?.id !== 'securityIdleDelay' || !config || !unlocked) return;
+    const seconds = Number(event.target.value);
+    if (!Number.isInteger(seconds) || !IDLE_OPTIONS.includes(seconds)) {
+      event.target.value = String(idleSeconds(config));
+      return;
+    }
+    try {
+      storeConfig({...config, idleLockSeconds:seconds});
+      lastInteraction = Date.now();
+      const help = document.getElementById('securityIdleHelp');
+      if (help) help.textContent = idleHelpText();
+      notify(`Bloqueo automático configurado: ${idleLabel(seconds)}.`);
+    } catch (_) {
+      event.target.value = String(idleSeconds(config));
+      notify('No se pudo guardar el tiempo de bloqueo. Revisa el almacenamiento del iPhone.');
+    }
+  });
+
+  document.addEventListener('change', event => {
+    if (event.target?.id !== 'securityLockOnExit' || !config || !unlocked) return;
+    const selected = event.target.value;
+    if (selected !== '0' && selected !== '1') {
+      event.target.value = lockOnExitEnabled(config) ? '1' : '0';
+      return;
+    }
+    try {
+      storeConfig({...config, lockOnExit:selected === '1'});
+      const help = document.getElementById('securityExitHelp');
+      if (help) help.textContent = lockOnExitEnabled(config)
+        ? 'Al cambiar de app o apagar la pantalla se solicita el PIN al regresar.'
+        : 'Puedes salir y volver sin PIN mientras la sesión siga abierta y no haya vencido el tiempo de inactividad. Al reiniciar la página o la app, se solicita el PIN.';
+      const idleHelp = document.getElementById('securityIdleHelp');
+      if (idleHelp) idleHelp.textContent = idleHelpText();
+      notify(lockOnExitEnabled(config) ? 'Bloqueo al salir activado.' : 'Bloqueo al salir desactivado. El tiempo de inactividad sigue activo.');
+    } catch (_) {
+      event.target.value = lockOnExitEnabled(config) ? '1' : '0';
+      notify('No se pudo guardar la preferencia. Revisa el almacenamiento del iPhone.');
+    }
+  });
+
+  const idleTimeElapsed = () => Date.now() - lastInteraction >= idleSeconds(config) * 1000;
+  document.addEventListener('visibilitychange', () => {
+    if (!config || !unlocked) return;
+    if (document.hidden) {
+      if (lockOnExitEnabled(config)) lockNow();
+    } else if (idleTimeElapsed()) {
+      // El temporizador de iOS puede estar suspendido mientras la PWA está en segundo plano.
+      lockNow();
+    }
+  });
+  window.addEventListener('pagehide', () => {
+    if (config && unlocked && (lockOnExitEnabled(config) || idleTimeElapsed())) lockNow();
+  });
   document.addEventListener('pointerdown',e=>{if(!e.target.closest('#securityGate'))lastInteraction=Date.now();},{passive:true});
   document.addEventListener('keydown',e=>{if(!e.target.closest('#securityGate'))lastInteraction=Date.now();});
-  setInterval(()=>{if(config && unlocked && Date.now()-lastInteraction>INACTIVITY_MS)lockNow();},15000);
+  setInterval(()=>{if(config && unlocked && Date.now()-lastInteraction >= idleSeconds(config)*1000)lockNow();},15000);
   showGate();
   if(currentTab==='settings')renderSettings();
 
   // Read-only testing/diagnostics, not a bypass for unlocking.
-  window.MiCarteraAccessStatus=()=>({configured:Boolean(config),locked:Boolean(config&&!unlocked),discreet:Boolean(config?.discreet)});
+  window.MiCarteraAccessStatus=()=>({configured:Boolean(config),locked:Boolean(config&&!unlocked),discreet:Boolean(config?.discreet),idleLockSeconds:idleSeconds(config),lockOnExit:lockOnExitEnabled(config)});
 })();

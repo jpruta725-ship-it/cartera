@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Mi Cartera · iPhone 3.4.4",
+  "name": "Mi Cartera · iPhone 3.4.7",
   "short_name": "Mi Cartera",
-  "description": "Mi Cartera iPhone 3.4.4 con rutas independientes, historial de puntualidad, Google Maps, documentos, copias en Drive y acceso por PIN.",
+  "description": "Mi Cartera iPhone 3.4.7 con rutas independientes, historial de puntualidad, Google Maps, documentos, copias en Drive y acceso por PIN y bloqueo configurable.",
   "lang": "es",
   "start_url": "./index.html",
   "scope": "./",

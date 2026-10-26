@@ -1,5 +1,5 @@
 'use strict';
-/* Mi Cartera iPhone 3.4.5 — Copias de seguridad en Google Drive.
+/* Mi Cartera iPhone 3.4.8 — Copias de seguridad en Google Drive.
  * La PWA nunca guarda contraseñas, refresh tokens ni access tokens permanentes.
  * Subida directa solo con OAuth explícito y Google Drive API habilitada.
  * Fallback fiable: descargar JSON y subirlo manualmente a Google Drive.
@@ -11,13 +11,18 @@
   const FOLDER_NAME='Mi Cartera - Respaldos';
   const MAX_FILE=125*1024*1024;
   const CLIENT_RE=/^[0-9]+-[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$/;
-  let config={clientId:'',mode:'download',lastUpload:null};
+  const PUBLISHED_CLIENT_ID = String(window.MI_CARTERA_GOOGLE_CLIENT_ID || '').trim();
+  const sharedClientConfigured=CLIENT_RE.test(PUBLISHED_CLIENT_ID);
+  let config={clientId:sharedClientConfigured?PUBLISHED_CLIENT_ID:'',mode:'download',lastUpload:null};
   try {
     const saved=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
     if(CLIENT_RE.test(String(saved.clientId||'')))config.clientId=saved.clientId;
     if(saved.mode==='drive'&&config.clientId)config.mode='drive';
     if(saved.lastUpload&&typeof saved.lastUpload.name==='string'&&typeof saved.lastUpload.at==='string')config.lastUpload=saved.lastUpload;
   } catch(_) { /* sin configuración previa */ }
+  // La configuración común publicada tiene prioridad; basta hacerlo una vez para todos los iPhone.
+  if(sharedClientConfigured)config.clientId=PUBLISHED_CLIENT_ID;
+  if(config.mode==='drive' && !config.clientId)config.mode='download';
   let accessToken='',expiryAt=0,folderId='',busy=false,sharePrepared=null,gisPromise=null;
   let sharePreparedName='';
   let preparedForManual=null;
@@ -41,21 +46,30 @@
   }
   function settingsCard(){
     const oauthOn=!!config.clientId;
+    const auth=connected();
+    const stateText=auth
+      ? 'Google Drive está conectado. Puedes guardar una copia ahora.'
+      : oauthOn
+        ? 'La conexión ya está preparada. Solo necesitas autorizar tu cuenta de Google.'
+        : 'Falta la activación inicial de Google. Es un paso único para la aplicación.';
     return `<div class="card drive-settings-card">
-      <div class="cardtitle">☁ Copias de seguridad en Google Drive</div>
-      <p class="sub">Guarda <b>todas las rutas y sus documentos</b> fuera del iPhone. La forma más compatible es <b>descargar el JSON y subirlo a Google Drive</b>. La subida directa requiere autorización OAuth.</p>
-      <div class="drive-state"><span class="pill ${connected()?'green':'amber'}">${connected()?'Autorizado':oauthOn?'Sin sesión activa':'Sin configurar'}</span><span class="sub">${readinessText()}</span></div>
-      ${oauthOn?`<div class="drive-actions">${btn(connected()?'↻ Renovar autorización':'Conectar Google Drive','drive-authorize','secondary')}${btn('⚙ Configurar acceso','drive-config','ghost')}</div>`:
-                 `<div class="drive-actions">${btn('⚙ Configurar subida directa','drive-config','secondary')}</div>`}
+      <div class="cardtitle">☁ Respaldos en Google Drive</div>
+      <p class="sub">Guarda <b>todas tus rutas y sus documentos</b> en una carpeta de Google Drive. La copia solo se considera terminada cuando Drive confirma la subida.</p>
+      <div class="drive-state"><span class="pill ${auth?'green':'amber'}">${auth?'Conectado':oauthOn?'Pendiente de conectar':'Sin activar'}</span><span class="sub">${stateText}</span></div>
       <div class="drive-actions">
-        ${btn('⬇ Descargar respaldo completo','drive-download','primary')}
-        ${btn('Abrir Google Drive para subirlo','drive-open-site','secondary')}
-        ${btn('Intentar Compartir (según navegador)','drive-prepare-share','ghost')}
-        ${btn('☁ Subida directa autorizada','drive-upload','ghost')}
+        ${oauthOn ? btn(auth?'↻ Reconectar Google':'Conectar mi Google Drive','drive-authorize','secondary') : btn('1. Activar Google Drive (una sola vez)','drive-setup','secondary')}
+        ${btn('☁ Guardar respaldo en Google Drive','drive-upload','primary')}
+      </div>
+      <div class="drive-actions">
+        ${btn('⬇ Descargar respaldo en el teléfono','drive-download','ghost')}
       </div>
       <p class="sub">${lastText()}</p>
-      <div class="note">${config.mode==='drive'?'Al usar «Exportar copia» se intentará subir directamente a Drive. Si falla la autorización, se ofrecerá una copia local.':'Si todavía no configuraste Google, descarga el JSON y súbelo manualmente en Drive. Compartir puede estar bloqueado por Safari, Opera u otros navegadores.'}</div>
-      <div class="sub">La primera vez que conectes Google deberás autorizar el acceso. iOS no permite garantizar subidas en segundo plano con la aplicación cerrada. Los respaldos JSON no están cifrados: protege tu cuenta de Google.</div>
+      <details class="drive-advanced"><summary>Ayuda y configuración avanzada</summary>
+        <p class="sub">${oauthOn ? 'Si se vence la sesión de Google, pulsa «Conectar mi Google Drive» de nuevo.' : 'Primero hay que registrar Mi Cartera en Google Cloud. Después todos los iPhone podrán conectarse con un botón.'}</p>
+        <div class="drive-actions">${btn('Ver instrucciones de activación','drive-setup','secondary')}${btn('Introducir ID en este dispositivo','drive-config','ghost')}${btn('Abrir Google Drive','drive-open-site','ghost')}</div>
+        <p class="sub">Si Google no funciona, descarga el respaldo y súbelo manualmente a Drive desde la aplicación Google Drive.</p>
+      </details>
+      <div class="sub">Solo se intenta la subida al pulsar el botón y mientras haya internet y autorización. La aplicación web no puede hacer copias en segundo plano cuando está cerrada.</div>
     </div>`;
   }
   const renderSettingsBefore=renderSettings;
@@ -67,19 +81,28 @@
   };
   function refreshSettings(){if(typeof currentTab!=='undefined'&&currentTab==='settings')renderSettings()}
 
-  function configModal(){
-    openModal('Conectar Google Drive',`<p class="sub">Para subir copias directamente, crea un <b>ID de cliente OAuth 2.0 de tipo Aplicación web</b> y activa la API de Google Drive en <b>Google Cloud</b>.</p>
+  function setupWizard(){
+    openModal('Activar Google Drive una sola vez',`
+      <p>Para que todos tus iPhone tengan el botón <b>«Conectar Google»</b>, es necesario registrar Mi Cartera una sola vez con Google. Solo tienes que copiar un identificador <b>público</b>.</p>
+      <ol class="sub">
+        <li>En Windows, abre <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud</a> y crea o selecciona un proyecto.</li>
+        <li>Activa la <b>API de Google Drive</b> y configura la pantalla de consentimiento OAuth para tu cuenta.</li>
+        <li>En <b>Google Auth Platform → Clients</b>, crea una credencial tipo <b>Aplicación web</b>.</li>
+        <li>En <b>Orígenes autorizados de JavaScript</b> escribe exactamente: <code>https://jpruta725-ship-it.github.io</code></li>
+        <li>Copia el <b>ID de cliente</b> que termina en <code>.apps.googleusercontent.com</code>. Puedes pegarlo aquí para este iPhone o en el archivo <code>google-client.js</code> de GitHub para todos los teléfonos.</li>
+      </ol>
+      <div class="note">Nunca escribas contraseñas, claves privadas ni secretos de cliente aquí. Solo el identificador público OAuth.</div>
       <div class="field"><label for="gclientId">ID de cliente OAuth web</label><input id="gclientId" name="clientId" autocomplete="off" autocapitalize="off" spellcheck="false" required value="${esc(config.clientId)}" placeholder="123456789-...apps.googleusercontent.com"></div>
-      <div class="note">Origen JavaScript autorizado: <b>https://jpruta725-ship-it.github.io</b> (sin «/cartera»). Nunca introduzcas una contraseña, un secreto de cliente ni una clave privada.</div>
-      <p class="sub">Después de guardar pulsa «Conectar Google Drive» para autorizar tu propia cuenta. Cada iPhone autoriza la suya por separado.</p>`,
-      'Guardar configuración',async(f)=>{
+      <p class="sub">Después de guardar, pulsa «Conectar mi Google Drive» y acepta el permiso en Google.</p>`,
+      'Guardar identificador',async(f)=>{
         const id=String(f.get('clientId')||'').trim();
-        if(!CLIENT_RE.test(id)){notify('Introduce un ID OAuth de aplicación web válido.');return}
+        if(!CLIENT_RE.test(id)){notify('El ID debe terminar en .apps.googleusercontent.com');return}
         if(id!==config.clientId){accessToken='';expiryAt=0;folderId='';}
         config.clientId=id;config.mode='download';persist();closeModal();refreshSettings();
-        loadGis().then(()=>notify('Google preparado: ahora pulsa «Conectar Google Drive».')).catch(()=>notify('No se pudo cargar Google. Comprueba internet.'));
+        loadGis().then(()=>notify('Preparado. Pulsa «Conectar mi Google Drive».')).catch(()=>notify('Comprueba tu conexión y pulsa «Conectar mi Google Drive».'));
       });
   }
+  function configModal(){setupWizard()}
   function loadGis(){
     if(window.google?.accounts?.oauth2?.initTokenClient)return Promise.resolve();
     if(gisPromise)return gisPromise;
@@ -95,7 +118,7 @@
   }
   // Debe invocarse en el clic del usuario: Safari puede bloquear OAuth si se abre más tarde.
   function authorize(){
-    if(!config.clientId){configModal();return}
+    if(!config.clientId){setupWizard();return}
     if(!window.google?.accounts?.oauth2?.initTokenClient){
       notify('Preparando Google… vuelve a pulsar Conectar cuando termine.');
       loadGis().then(()=>notify('Listo. Pulsa Conectar de nuevo para autorizar.')).catch(()=>notify('No se pudo cargar Google. Comprueba internet.'));
@@ -132,7 +155,7 @@
   async function ensureFolder(){
     if(folderId)return folderId;
     const query=`name = '${FOLDER_NAME.replaceAll("'","\\'")}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
-    const lookup=await googleRequest('https://www.googleapis.com/drive/v3/files?'+new URLSearchParams({q:query,fields:'files(id,name),nextPageToken',page_size:'50'}));
+    const lookup=await googleRequest('https://www.googleapis.com/drive/v3/files?'+new URLSearchParams({q:query,fields:'files(id,name),nextPageToken',pageSize:'50'}));
     const listing=await lookup.json();
     let id=Array.isArray(listing.files)?listing.files.find(x=>x.name===FOLDER_NAME)?.id:null;
     if(!id){
@@ -204,7 +227,7 @@
   window.MiCarteraBackupDelivery=deliverBackup;
   async function directUploadAction(){
     if(busy){notify('Ya se está creando una copia');return}
-    if(!connected()){notify('Primero conecta tu cuenta de Google Drive desde Ajustes.');if(!config.clientId)configModal();return}
+    if(!connected()){notify(config.clientId?'Primero pulsa «Conectar mi Google Drive».':'Primero activa Google Drive una sola vez.');if(!config.clientId)setupWizard();return}
     busy=true;
     try {
       const prepared=await buildPrepared();
@@ -270,6 +293,7 @@
   }
   const previousAction=handleAction;
   handleAction=function(action){
+    if(action==='drive-setup'){setupWizard();return}
     if(action==='drive-config'){configModal();return}
     if(action==='drive-authorize'){authorize();return}
     if(action==='drive-upload'){directUploadAction();return}

@@ -37,3 +37,32 @@ PWA local para iPhone en español y reales brasileños, con diseño oscuro.
 Para todas las reglas, limitaciones y pruebas, lee [NOVEDADES-3.4.md](NOVEDADES-3.4.md).
 
 **Datos privados:** no subas clientes, créditos, documentos ni copias JSON al repositorio público. Cada iPhone guarda sus propias rutas. Las rutas no son cuentas separadas con contraseña.
+
+
+## Mi Cartera iPhone 3.4.4 — Acceso y modo discreto
+
+Desde **Copias y ajustes → Privacidad y acceso** se puede configurar una clave de seis dígitos.
+Después, Mi Cartera exige el PIN al volver a abrir o regresar a la app y se bloquea
+tras cinco minutos de inactividad. **Bloquear ahora** está disponible también desde
+el menú superior.
+
+**Modo discreto** reemplaza la vista financiera por una pantalla neutra. Para
+volver, mantén pulsado el círculo central aproximadamente un segundo (o pulsa
+«Acceder» para accesibilidad) e introduce el PIN. Al desbloquear se desactiva
+el modo discreto y aparece Mi Cartera de nuevo.
+
+Puedes cambiar o desactivar el PIN introduciendo la clave actual. La verificación
+usa PBKDF2-SHA256 con sal aleatoria. El PIN no se sincroniza entre iPhone ni se
+incluye en el respaldo de clientes, rutas y documentos.
+
+**Limitaciones y seguridad:** esto NO cifra la base de datos local, NO oculta el
+icono de la pantalla de inicio y NO es Face ID. Una aplicación PWA no puede
+ocultar por sí sola su icono en iOS. Los respaldos JSON siguen sin cifrar;
+consérvalos en una ubicación privada. Si olvidas el PIN no hay recuperación
+por correo ni clave maestra; conserva siempre un respaldo exportado antes de
+activar la función. Borrar los datos de Safari o desinstalar la PWA puede
+eliminar la información local no respaldada.
+
+Para actualizar la app que ya usas en iPhone, sube **todos los archivos** de
+esta versión a GitHub Pages, especialmente `security.js`, `index.html`,
+`styles.css` y `sw.js`. Mantén el mismo dominio/ruta para conservar datos.

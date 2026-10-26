@@ -431,3 +431,35 @@ input::placeholder,textarea::placeholder{color:#8593AA;opacity:1}
 .payment-quota-summary{background:#DEF8F0;color:#075E56}
 .drive-settings-card{border-color:#B9DED6}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* iPhone 3.4.4 — PIN local y modo discreto (pantalla privada, no cifrado de datos). */
+.security-gate[hidden]{display:none!important}
+body.mc-locked{overflow:hidden!important}
+body.mc-locked > :not(#securityGate){visibility:hidden!important;pointer-events:none!important}
+.security-gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 18px) 22px calc(env(safe-area-inset-bottom,0px) + 22px);background:#f4f7ff;color:#14243d;box-sizing:border-box}
+.security-panel{width:min(100%,430px);padding:30px 23px 24px;background:#fff;border:1px solid #dee6f8;border-radius:27px;box-shadow:0 22px 65px #4767a526;box-sizing:border-box}
+.security-logo{display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:22px;background:linear-gradient(145deg,#4167f0,#7952e8);color:white;font-size:33px;font-weight:800;margin:0 auto 18px}
+.security-eyebrow{text-align:center;font-size:10px;letter-spacing:2px;font-weight:850;color:#5968b0}
+.security-panel h1{font-size:24px;line-height:1.25;text-align:center;color:#14243d;margin:10px 0}
+.security-panel p{font-size:13px;line-height:1.6;text-align:center;color:#617189;margin:9px 0 20px}
+.security-panel label{display:block;font-size:13px;font-weight:750;color:#25334f;margin:0 0 9px}
+.security-panel input{box-sizing:border-box;width:100%;height:56px;border:1px solid #cbd6e8;border-radius:14px;background:#f7faff;color:#1d3153;font-size:25px;letter-spacing:14px;text-align:center;font-family:inherit;padding:10px}
+.security-panel input:focus{outline:2px solid #4167f0;outline-offset:2px}
+.security-error{font-size:12px;min-height:23px;margin-top:11px;color:#c12f53;text-align:center}
+.security-submit{width:100%;height:52px;border:0;border-radius:14px;background:linear-gradient(110deg,#4167f0,#7952e8);color:white;font-weight:800;font-size:15px;cursor:pointer}
+.security-submit:disabled{opacity:.5;cursor:not-allowed}
+.security-panel .security-hint{font-size:11px;line-height:1.5;margin:18px 0 0;color:#718096}
+.security-discreet{width:min(100%,420px);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;color:#455b76}
+.security-symbol{width:86px;height:86px;border:1px solid #cad8ee;border-radius:28px;display:grid;place-items:center;background:#fff;color:#6884b5;font-size:36px;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 12px 28px #536a9722;cursor:pointer}
+.security-symbol:focus-visible{outline:3px solid #4167f0}
+.security-discreet h1{font-size:20px;margin:23px 0 2px;color:#24354f}
+.security-discreet p{font-size:13px;color:#6c7f9e}
+.security-footnote{font-size:11px;color:#8290a9;margin-top:33px}
+.security-text-link{color:#5574aa;background:none;border:0;margin-top:21px;padding:12px;font-size:12px;text-decoration:underline;cursor:pointer}
+.security-settings-card{border:1px solid #cfdafa!important}
+.security-status{display:inline-block;border-radius:999px;padding:7px 9px;background:#eef2f8;color:#5a6a83;font-weight:750;font-size:11px;white-space:nowrap}
+.security-status.is-on{background:#ddf8ec;color:#176d55}
+.security-settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.security-settings-actions>.btn{white-space:normal;min-height:43px;padding:10px 8px;font-size:12px}
+.security-settings-card .security-limit{font-size:11px;line-height:1.6;margin:12px 0}
+@media(max-width:360px){.security-panel{padding:24px 15px}.security-settings-actions{grid-template-columns:1fr}}

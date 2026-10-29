@@ -41,3 +41,11 @@ Google exige registrar la aplicación que solicita permiso para escribir en Driv
 ## Pruebas
 
 Se verificó la sintaxis JavaScript y la interfaz/flujo con pruebas de lógica simuladas, incluyendo el caso sin ID y con ID público configurado. **No se realizó una subida real a Google Drive ni se probó en Safari físico**: la verificación final requiere tu autorización Google y una cuenta real.
+
+## Versión 3.4.9
+
+- Nueva pantalla de Cobros: **Por pagar / Pagado hoy**. Los créditos con abonos registrados hoy dejan de aparecer en Por pagar, aunque sigan atrasados.
+- En Pagado hoy puedes **Eliminar abono** con confirmación, para corregir cuotas cobradas por error. La cuota del contrato permanece; se anula el movimiento monetario registrado.
+- Inicio presenta total, cuotas pagadas y pendientes por cliente y por crédito de la ruta activa.
+- **Renovar crédito** disponible desde ⋮ o detalle. Crea un contrato nuevo vinculado al anterior. **No cancela automáticamente ningún saldo previo**; en caso de deuda pendiente lo deja claro y solicita confirmación.
+- La nueva lógica está en `workflow.js` y debe subirse junto con `index.html`, `sw.js` y el resto de archivos del ZIP.

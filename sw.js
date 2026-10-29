@@ -1,5 +1,5 @@
-const CACHE='micartera-iphone-v348-drive-facil';
-const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./integrity.js','./quality.js','./maps.js','./routes.js','./google-client.js','./drive.js','./security.js','./manifest.json','./icon-192.png','./icon-512.png'];
+const CACHE='micartera-iphone-v349-cobros-renovacion';
+const FILES=['./','./index.html','./styles.css','./app.js','./parity.js','./documents.js','./improvements.js','./integrity.js','./quality.js','./maps.js','./routes.js','./google-client.js','./drive.js','./security.js','./workflow.js','./manifest.json','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });
